@@ -1,0 +1,12 @@
+[package]
+name = "cuda"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+nvvm = { path = "../nvvm-0.1.1" }
+lazy_static = "1.4.0"
+typed-arena = "1.5.2"
+
+[build-dependencies]
+find_cuda_helper = "0.2.0"

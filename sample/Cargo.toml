@@ -1,0 +1,9 @@
+[package]
+name = "rust_kernels"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+nvvm = { path = "../nvvm-0.1.1" }
+nvjitlink = { path = "../nvjitlink" }
+cuda = { path = "../cuda" }

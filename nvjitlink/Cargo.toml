@@ -1,0 +1,10 @@
+[package]
+name = "nvjitlink"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+
+
+[build-dependencies]
+find_cuda_helper = "0.2"
