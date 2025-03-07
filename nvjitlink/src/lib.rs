@@ -2,6 +2,7 @@
 #![allow(non_snake_case)]
 #![allow(non_camel_case_types)]
 #![warn(non_upper_case_globals)]
+#![allow(warnings, clippy::warnings)] // TODO: remove this
 
 use std::{fmt::{self, Display}, mem::MaybeUninit, os::raw::c_void};
 mod sys;

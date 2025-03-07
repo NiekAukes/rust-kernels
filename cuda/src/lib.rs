@@ -1,15 +1,18 @@
 #![feature(tuple_trait)]
 #![feature(unboxed_closures)]
 #![feature(fn_traits)]
+#![feature(negative_impls)]
+#![allow(warnings)] // TODO: remove this
 
 use std::mem::MaybeUninit;
-#[allow(warnings)]
 
-pub mod sys;
+use nvvm::NvvmError;
 pub mod dmem;
-pub mod module;
-pub mod kernel;
 pub mod engine;
+pub mod kernel;
+pub mod module;
+#[allow(warnings)]
+pub mod sys;
 
 #[macro_use]
 extern crate lazy_static;
@@ -42,6 +45,7 @@ pub enum CUDAError {
     DeviceNotInitialized,
     InvalidSource,
     IllegalAddress,
+    NVVMError(NvvmError),
     Unknown(sys::cudaError_enum),
 }
 
@@ -76,7 +80,6 @@ impl CUDA {
         // get the devices
         let mut devices = Vec::with_capacity(device_count as usize);
         for i in 0..device_count {
-            
             let device = unsafe {
                 let mut dp = MaybeUninit::uninit();
                 sys::cuDeviceGet(dp.as_mut_ptr(), i).to_result()?;
@@ -95,7 +98,7 @@ impl CUDA {
         let ctx = {
             if let Some(device) = devices.first() {
                 let mut pctx = MaybeUninit::uninit();
-                unsafe { 
+                unsafe {
                     sys::cuCtxCreate_v2(pctx.as_mut_ptr(), 0, device.handle).to_result()?;
                     pctx.assume_init()
                 }
@@ -104,17 +107,12 @@ impl CUDA {
             }
         };
 
-
-        Ok(CUDA {
-             devices,
-             ctx,
-        })
+        Ok(CUDA { devices, ctx })
     }
 
     pub fn add_module(&self, module: &[u8]) -> Result<module::Module, CUDAError> {
         module::Module::new(self, module)
     }
-
 }
 
 impl Drop for CUDA {
@@ -128,4 +126,3 @@ pub struct Device {
     name: String,
     handle: sys::CUdevice,
 }
-

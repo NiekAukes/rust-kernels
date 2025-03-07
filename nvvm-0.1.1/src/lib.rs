@@ -1,5 +1,5 @@
 //! High level safe bindings to the NVVM compiler (libnvvm) for writing CUDA GPU kernels with a subset of LLVM IR.
-
+#![allow(warnings, clippy::warnings)] // TODO: remove this
 use std::{
     ffi::{CStr, CString},
     fmt::Display,
@@ -55,6 +55,13 @@ pub fn nvvm_version() -> (i32, i32) {
         // according to the docs this cant fail
         sys::nvvmVersion(major.as_mut_ptr(), minor.as_mut_ptr());
         (major.assume_init(), minor.assume_init())
+    }
+}
+
+pub fn get_error_string(err: NvvmError) -> String {
+    unsafe {
+        let ptr = sys::nvvmGetErrorString(err.to_raw());
+        CStr::from_ptr(ptr).to_string_lossy().to_string()
     }
 }
 

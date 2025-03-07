@@ -7,3 +7,6 @@ edition = "2021"
 nvvm = { path = "../nvvm-0.1.1" }
 nvjitlink = { path = "../nvjitlink" }
 cuda = { path = "../cuda" }
+
+[build]
+rustc = "../../rust/build/x86_64-unknown-linux-gnu/stage1/bin/rustc"
