@@ -9,6 +9,7 @@ use std::mem::MaybeUninit;
 use nvvm::NvvmError;
 pub mod dmem;
 pub mod engine;
+pub mod gpu;
 pub mod kernel;
 pub mod module;
 #[allow(warnings)]
@@ -19,9 +20,6 @@ extern crate lazy_static;
 
 static mut CUDA: Option<CUDA> = None;
 
-pub fn thread_idx_x() -> usize {
-    0
-}
 
 pub fn get_cuda() -> &'static CUDA {
     unsafe {

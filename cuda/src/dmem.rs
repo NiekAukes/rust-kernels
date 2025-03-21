@@ -4,7 +4,7 @@ use std::{
 };
 
 use super::CUDA;
-use crate::{sys, CUDAError, ToResult};
+use crate::{gpu::__trap, sys, CUDAError, ToResult};
 
 // ==================
 // ===== Traits =====
@@ -463,3 +463,93 @@ impl<'a, 'b, T: DeepCopy + ToOwned + Clone> DPtr<'a, &'b [T]> {
 //         _pass_mode: DPassMode::Direct,
 //     }
 // }
+
+#[derive(Debug, Clone, Copy)]
+pub struct Buffer<T: Sized + Copy>(*mut T, usize);
+
+impl<T: Sized + Copy> Buffer<T> {
+    pub fn get(&self, index: usize) -> T {
+        if index >= self.1 {
+            //panic!("Index out of bounds");
+            unsafe {
+                __trap();
+            }
+        }
+        unsafe { *self.0.add(index) }
+    }
+
+    pub fn set(&mut self, index: usize, value: T) {
+        if index >= self.1 {
+            //panic!("Index out of bounds");
+            unsafe {
+                __trap();
+            }
+        }
+        unsafe {
+            let ptr = self.0.add(index);
+            *ptr = value;
+        }
+    }
+
+    pub unsafe fn get_uc(&self, index: usize) -> T {
+        *self.0.add(index)
+    }
+
+    pub unsafe fn set_uc(&mut self, index: usize, value: T) {
+        let ptr = self.0.add(index);
+        *ptr = value;
+    }
+
+    /// Allocates a modifyable buffer of the given length on the device
+    pub fn alloc(size: usize) -> Result<Self, CUDAError> {
+        let cuda = crate::get_cuda();
+        let mut dptr = MaybeUninit::uninit();
+        // get the size of the type
+        let bc = size * std::mem::size_of::<T>();
+        // allocate the device memory
+        let device_ptr = unsafe {
+            sys::cuMemAlloc_v2(dptr.as_mut_ptr(), bc).to_result()?;
+            dptr.assume_init() as *mut T
+        };
+        Ok(Buffer(device_ptr, size))
+    }
+
+    pub fn retrieve(&self) -> Result<Vec<T>, CUDAError> {
+        let mut data = Vec::with_capacity(self.1);
+        let bc = self.1 * std::mem::size_of::<T>();
+        unsafe {
+            data.set_len(self.1);
+        }
+        unsafe {
+            sys::cuMemcpyDtoH_v2(data.as_mut_ptr() as *mut c_void, self.0 as u64, bc)
+                .to_result()?;
+        }
+        Ok(data)
+    }
+
+    fn free(&mut self) {
+        unsafe {
+            sys::cuMemFree_v2(self.0 as u64).to_result().unwrap();
+        }
+    }
+}
+
+impl<T: Sized + Copy> DSend for Buffer<T> {
+    fn to_device<'a>(&self) -> Result<DPtr<'a, Self>, CUDAError> {
+        let cuda = crate::get_cuda();
+        let size = std::mem::size_of::<T>() * self.1;
+        Ok(DPtr {
+            cuda,
+            _device_ptr: unsafe { transmute(self.0) },
+            _size: size,
+            _pass_mode: DPassMode::Pair {
+                data: self.1 as u64,
+                _size: 8,
+            },
+        })
+    }
+
+    fn copy_from_device<'a>(&mut self, dptr: DPtr<'a, Self>) -> Result<(), CUDAError> {
+        Ok(())
+    }
+}

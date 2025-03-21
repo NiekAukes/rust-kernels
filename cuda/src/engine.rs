@@ -205,6 +205,20 @@ impl<Dim: CudaDim, T: DSend, U: DSend> Kernel<Dim, (T, U)> {
         arg2.copy_from_device(t2)?;
         Ok(())
     }
+
+    pub fn launch_with_dptr(
+        &self,
+        threads_per_block: Dim,
+        blocks: Dim,
+        arg1: &mut DPtr<T>,
+        arg2: &mut DPtr<U>,
+    ) -> Result<(), CUDAError> {
+        let module = compile_program(self.code, self.name).unwrap();
+        let kernel = module.get_kernel(self.name)?;
+        kernel.launch(&blocks, &threads_per_block, 0, &[arg1.pass(), arg2.pass()])?;
+
+        Ok(())
+    }
 }
 
 impl<Dim: CudaDim, T: DSend, U: DSend, V: DSend> Kernel<Dim, (T, U, V)> {
