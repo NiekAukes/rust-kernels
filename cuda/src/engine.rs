@@ -1,6 +1,8 @@
 use std::io::Write;
 use std::{marker::Tuple, rc::Rc, sync::Arc};
 
+use std::env;
+
 extern crate lazy_static;
 use crate::get_cuda;
 use crate::{
@@ -85,14 +87,16 @@ pub fn compile_program<'a>(
         }
     };
 
-    // // encode the PTX as a string
-    let ptxs = String::from_utf8(ptx.clone()).unwrap();
-    //println!("PTX: {}", ptxs);
-    let mut file = std::fs::File::create("gpu64.ptx").unwrap();
+    if (env::var("CUDA_DEBUG").is_ok()) {
+        // // encode the PTX as a string
+        let ptxs = String::from_utf8(ptx.clone()).unwrap();
+        //println!("PTX: {}", ptxs);
+        let mut file = std::fs::File::create("gpu64.ptx").unwrap();
 
-    file.write_all(&ptx).unwrap();
+        file.write_all(&ptx).unwrap();
 
-    println!("PTX written to gpu64.ptx");
+        println!("PTX written to gpu64.ptx");
+    }
 
     let cuda = get_cuda();
     // create a module
@@ -257,6 +261,26 @@ impl<Dim: CudaDim, T: DSend, U: DSend, V: DSend> Kernel<Dim, (T, U, V)> {
         arg1.copy_from_device(t1)?;
         arg2.copy_from_device(t2)?;
         arg3.copy_from_device(t3)?;
+        Ok(())
+    }
+
+    pub fn launch_with_dptr(
+        &self,
+        threads_per_block: Dim,
+        blocks: Dim,
+        arg1: &mut DPtr<T>,
+        arg2: &mut DPtr<U>,
+        arg3: &mut DPtr<V>,
+    ) -> Result<(), CUDAError> {
+        let module = compile_program(self.code, self.name).unwrap();
+        let kernel = module.get_kernel(self.name)?;
+        kernel.launch(
+            &blocks,
+            &threads_per_block,
+            0,
+            &[arg1.pass(), arg2.pass(), arg3.pass()],
+        )?;
+
         Ok(())
     }
 }

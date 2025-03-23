@@ -553,3 +553,26 @@ impl<T: Sized + Copy> DSend for Buffer<T> {
         Ok(())
     }
 }
+
+impl<T: Sized + Copy> DPtr<'_, Buffer<T>> {
+    pub fn retrieve(&self) -> Result<Vec<T>, CUDAError> {
+        let size = match self._pass_mode {
+            DPassMode::Pair { data, _size } => data as usize,
+            _ => panic!("unexpected pass mode"),
+        };
+        let mut data = Vec::with_capacity(size);
+        let bc = size * std::mem::size_of::<T>();
+        unsafe {
+            data.set_len(size);
+        }
+        unsafe {
+            sys::cuMemcpyDtoH_v2(
+                data.as_mut_ptr() as *mut c_void,
+                self._device_ptr as u64,
+                bc,
+            )
+            .to_result()?;
+        }
+        Ok(data)
+    }
+}

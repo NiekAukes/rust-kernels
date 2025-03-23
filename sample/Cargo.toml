@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-nvvm = { path = "../nvvm-0.1.1" }
+nvvm = { path = "../nvvm-0.2" }
 nvjitlink = { path = "../nvjitlink" }
 cuda = { path = "../cuda" }
 
