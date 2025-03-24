@@ -56,6 +56,15 @@ pub fn compile_program<'a>(
     if let Some(module) = cache.get(name) {
         return Ok(module);
     }
+
+    if (env::var("CUDA_DEBUG").is_ok()) {
+        let mut file = std::fs::File::create("gpu64.ll").unwrap();
+
+        file.write_all(code).unwrap();
+
+        println!("NVVM written to gpu64.ll");
+    }
+
     let program = nvvm::NvvmProgram::new().unwrap();
     match program.add_module(code, name.to_string()) {
         Ok(_) => {}
@@ -65,14 +74,7 @@ pub fn compile_program<'a>(
         }
     }
 
-    // also add libintrinsics.ll
-    // match program.add_module(INTRINSICS.as_slice(), "libintrinsics.ll".to_string()) {
-    //     Ok(_) => {}
-    //     Err(e) => {
-    //         println!("Error adding libintrinsics module: {:?}", e);
-    //         return Err(CUDAError::NVVMError(e));
-    //     }
-    // }
+    
 
     let ptx = match program.compile(&[nvvm::NvvmOption::NoOpts]) {
         Ok(c) => c,
