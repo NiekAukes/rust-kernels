@@ -34,9 +34,8 @@ pub fn find_libnvvm() -> String {
     find_cuda_root()
         .expect("Failed to find CUDA ROOT, make sure the CUDA SDK is installed and CUDA_PATH or CUDA_ROOT are set!")
         .join("nvvm")
-        .join("lib")
-        .join("x64")
-        .join("libnvvm.dll")
+        .join("bin")
+        .join("nvvm64_40_0.dll")
         .to_string_lossy()
         .into_owned()
 }
