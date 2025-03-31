@@ -130,6 +130,7 @@ deepcopy!(u8);
 deepcopy!(u16);
 deepcopy!(u32);
 deepcopy!(u64);
+deepcopy!(usize);
 deepcopy!(i8);
 deepcopy!(i16);
 deepcopy!(i32);
