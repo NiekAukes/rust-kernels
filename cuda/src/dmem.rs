@@ -577,3 +577,26 @@ impl<T: Sized + Copy> DPtr<'_, Buffer<T>> {
         Ok(data)
     }
 }
+
+// =================================================================
+// Atomic i32
+// =================================================================
+
+// #[derive(Debug, Clone, Copy)]
+// struct Ai32 {
+//     x: i32,
+// }
+
+// impl Ai32 {
+//     pub fn alloc(&self) -> i32 {
+//         self.x
+//     }
+
+//     pub fn new(x: i32) -> Self {
+//         Ai32 { x }
+//     }
+
+//     pub fn set(&mut self, x: i32) {
+//         self.x = x;
+//     }
+// }
