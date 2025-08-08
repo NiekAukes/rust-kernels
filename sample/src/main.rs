@@ -1,50 +1,87 @@
+#![feature(lang_items)]
+#![feature(tuple_trait)]
 #![engine(cuda::engine)]
 
-use cuda::dmem::{Buffer, DSend};
-use cuda::gpu;
+use core::panic;
+use std::panic::PanicInfo;
+use std::str;
+use std::any::Any;
+
+use cuda::dmem::Buffer;
+
+
+#[lang = "kernel_exchange_malloc_fn"]
+#[no_mangle]
+fn kernel_exchange_malloc(size: usize, _align: usize) -> *mut u8 {
+    return std::ptr::null_mut();
+}
+
+#[lang = "kernel_panic_impl"]
+#[no_mangle]
+fn kernel_panic_impl(info: &PanicInfo) -> ! {
+    unsafe { cuda::gpu::__trap(); }
+    loop {}
+}
+
+#[lang = "kernel_panic_fmt_impl"]
+#[no_mangle]
+fn kernel_panic_fmt_impl(info: &PanicInfo) -> ! {
+    unsafe { cuda::gpu::__trap(); }
+    loop {}
+}
+
+trait DoIt {
+    fn do_sth(&self) -> i32;
+}
+
+struct Thing;
+struct Thang;
+
+impl DoIt for Thing {
+    fn do_sth(&self) -> i32 {
+        421
+    }
+}
+
+impl DoIt for Thang {
+    fn do_sth(&self) -> i32 {
+        24
+    }
+}
 
 #[kernel]
 unsafe fn gpu64(mut a: Buffer<i32>) {
-    let i = gpu::global_tid_x();
-    a.set(i as usize, i);
+    // let tid = cuda::gpu::global_tid_x();
+    // if tid != 0  {
+    //     return;
+    // }
+    // let my_thing = Thing;
+    // let my_thang = Thang;
+    // let trait_obj: &dyn DoIt = &my_thing;
+    // let trait_obj2: &dyn DoIt = &my_thang;
+
+
+    // let _result = trait_obj.do_sth();
+    // let _result2 = trait_obj2.do_sth();
+
+    // a.set(0, _result);
+    // a.set(1, _result2)
+    let _ = Box::new(42) as Box<dyn Any>;
+    //panic!("This is a panic from the kernel");
 }
 
 fn main() {
-    let threads_per_block = 64;
-    let blocks = 4;
-    let a = Buffer::<i32>::alloc(threads_per_block * blocks).unwrap();
+    let s = match str::from_utf8(gpu64.code) {
+        Ok(v) => v,
+        Err(e) => panic!("Invalid UTF-8 sequence: {}", e),
+    };
 
-    // launch the kernel with 64 * 4 threads
-    gpu64.launch(threads_per_block, blocks, a).unwrap();
+    //println!("code: {}", s);
 
-    let result = a.retrieve().unwrap();
-    println!("Result: {:?}", result);
+    let mut buffer = Buffer::<i32>::alloc(2).unwrap();
 
-    // Test with dptr
-    with_dptr();
-}
+    gpu64.launch(10, 10, buffer);
 
-#[kernel]
-unsafe fn gpu_cpy(mut a: Buffer<i32>, b: &[i32]) {
-    let i = gpu::global_tid_x() as usize;
-    let bi = b[i];
-    a.set(i, bi);
-}
-
-fn with_dptr() {
-    let threads_per_block = 10;
-    let blocks = 1;
-    let a = Buffer::<i32>::alloc(threads_per_block * blocks).unwrap();
-    let b = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 11];
-
-    let mut a_device = a.to_device().unwrap();
-    let mut b_device = b.as_slice().to_device().unwrap();
-
-    // launch the kernel with 64 * 4 threads
-    gpu_cpy
-        .launch_with_dptr(threads_per_block, blocks, &mut a_device, &mut b_device)
-        .unwrap();
-
-    let result = a.retrieve().unwrap();
-    println!("Result: {:?}", result);
+    let result = buffer.retrieve().unwrap();
+    println!("Result {:?}", result);
 }

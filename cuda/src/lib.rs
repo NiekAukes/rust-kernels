@@ -2,6 +2,7 @@
 #![feature(unboxed_closures)]
 #![feature(fn_traits)]
 #![feature(negative_impls)]
+#![feature(lang_items)]
 #![allow(warnings)] // TODO: remove this
 
 use std::mem::MaybeUninit;

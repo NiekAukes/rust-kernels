@@ -34,11 +34,13 @@ macro_rules! deepcopy {
             fn to_device<'a>(&self) -> Result<DPtr<'a, Self>, CUDAError> {
                 let cuda = crate::get_cuda();
                 let size = std::mem::size_of::<$t>();
+                let data: &u64 = unsafe { transmute(self) };
+                let data = *data;
                 Ok(DPtr {
                     cuda,
                     _device_ptr: 0 as *mut Self,
                     _size: size,
-                    _pass_mode: DPassMode::Scalar { data: *self as u64 },
+                    _pass_mode: DPassMode::Scalar { data },
                 })
             }
 
@@ -140,6 +142,7 @@ deepcopy!(f64);
 deepcopy!(bool);
 deepcopy!(char);
 
+
 pub trait DSend: Sized {
     fn to_device<'a>(&self) -> Result<DPtr<'a, Self>, CUDAError>;
     fn to_dptr<'a>(&self) -> Result<DPtr<'_, ()>, CUDAError> {
@@ -169,6 +172,7 @@ pub trait DSendOwned: DSend + ToOwned {
 // ===== DPtr =====
 // ================
 
+#[derive(Debug)]
 pub(crate) enum DPassMode {
     Direct,
     Scalar { data: u64 },

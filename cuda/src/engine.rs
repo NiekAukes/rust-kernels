@@ -1,3 +1,4 @@
+
 use std::io::Write;
 use std::{marker::Tuple, rc::Rc, sync::Arc};
 
@@ -11,6 +12,7 @@ use crate::{
     module::Module,
     CUDAError,
 };
+use std::panic::PanicInfo;
 use lazy_static::lazy_static;
 #[derive(Debug)]
 pub struct Kernel<Dim, Args>
@@ -21,6 +23,7 @@ where
     pub code: &'static [u8],
     pub phantom: std::marker::PhantomData<(Dim, Args)>,
 }
+
 
 // compiler cache
 use std::collections::HashMap;
