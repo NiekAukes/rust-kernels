@@ -1,3 +1,6 @@
+use core::panic::PanicInfo;
+use std::arch::asm;
+
 extern "C" {
     pub fn __nvvm_thread_idx_x() -> i32;
     pub fn __nvvm_thread_idx_y() -> i32;
@@ -24,4 +27,39 @@ pub fn global_tid_x() -> i32 {
         //let warp_size = __nvvm_warp_size();
         thread_idx_x + block_idx_x * block_dim_x
     }
+}
+
+#[inline(always)]
+#[target = "nvvm"]
+pub fn syncthreads() {
+    unsafe {
+        asm!("bar.sync 0;", options(nostack, preserves_flags));
+    }
+}
+
+#[lang = "kernel_panic_impl"]
+#[inline(always)]
+pub fn kernel_panic_impl(info: &PanicInfo) -> ! {
+    unsafe {
+        crate::gpu::__trap();
+    }
+    loop {}
+}
+
+#[lang = "kernel_panic_fmt_impl"]
+#[inline(always)]
+pub fn kernel_panic_fmt_impl(info: &PanicInfo) -> ! {
+    unsafe {
+        crate::gpu::__trap();
+    }
+    loop {}
+}
+
+#[lang = "kernel_panic_nounwind_impl"]
+#[inline(always)]
+pub fn kernel_panic_nounwind_impl(expr: &'static str) -> ! {
+    unsafe {
+        crate::gpu::__trap();
+    }
+    loop {}
 }

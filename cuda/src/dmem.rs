@@ -27,6 +27,7 @@ pub trait DeepCopy {}
 // impl DeepCopy for char {}
 // impl DeepCopy for () {}
 
+#[macro_export]
 macro_rules! deepcopy {
     ($t:ty) => {
         impl DeepCopy for $t {}
@@ -177,13 +178,14 @@ pub(crate) enum DPassMode {
     Direct,
     Scalar { data: u64 },
     Pair { data: u64, _size: usize },
+
 }
 
 /// A reference to data on the device
 pub struct DPtr<'a, T: DSend> {
-    cuda: &'a CUDA,
+    pub(crate) cuda: &'a CUDA,
     pub(crate) _device_ptr: *mut T,
-    _size: usize,
+    pub(crate) _size: usize,
     pub(crate) _pass_mode: DPassMode,
 }
 
@@ -604,3 +606,7 @@ impl<T: Sized + Copy> DPtr<'_, Buffer<T>> {
 //         self.x = x;
 //     }
 // }
+
+
+
+deepcopy!(crate::atom::AtomI32);

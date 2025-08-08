@@ -47,7 +47,7 @@ impl<'a> Kernel<'a> {
         args: &[&DPtr<'_, ()>],
     ) -> Result<(), crate::CUDAError> {
         let mut args_d = vec![];
-        
+
         for arg in args.into_iter() {
             match arg._pass_mode {
                 DPassMode::Direct => {

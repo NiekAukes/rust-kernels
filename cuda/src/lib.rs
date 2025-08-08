@@ -3,11 +3,13 @@
 #![feature(fn_traits)]
 #![feature(negative_impls)]
 #![feature(lang_items)]
+#![feature(asm_experimental_arch)]
 #![allow(warnings)] // TODO: remove this
 
 use std::mem::MaybeUninit;
 
 use nvvm::NvvmError;
+pub mod atom;
 pub mod dmem;
 pub mod engine;
 pub mod gpu;
@@ -20,7 +22,6 @@ pub mod sys;
 extern crate lazy_static;
 
 static mut CUDA: Option<CUDA> = None;
-
 
 pub fn get_cuda() -> &'static CUDA {
     unsafe {
@@ -44,6 +45,7 @@ pub enum CUDAError {
     DeviceNotInitialized,
     InvalidSource,
     IllegalAddress,
+    InvalidPtx,
     NVVMError(NvvmError),
     Unknown(sys::cudaError_enum),
 }
@@ -56,6 +58,7 @@ impl ToResult for sys::cudaError_enum {
             sys::cudaError_enum_CUDA_ERROR_NOT_FOUND => Err(CUDAError::DeviceNotFound),
             sys::cudaError_enum_CUDA_ERROR_INVALID_SOURCE => Err(CUDAError::InvalidSource),
             sys::cudaError_enum_CUDA_ERROR_ILLEGAL_ADDRESS => Err(CUDAError::IllegalAddress),
+            sys::cudaError_enum_CUDA_ERROR_INVALID_PTX => Err(CUDAError::InvalidPtx),
             _ => Err(CUDAError::Unknown(self)),
         }
     }
@@ -124,4 +127,8 @@ impl Drop for CUDA {
 pub struct Device {
     name: String,
     handle: sys::CUdevice,
+}
+
+pub fn device_sync() -> Result<(), CUDAError> {
+    unsafe { sys::cuCtxSynchronize().to_result() }
 }
