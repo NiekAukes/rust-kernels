@@ -129,6 +129,7 @@ pub enum NvvmOption {
     FastDiv,
     /// Whether to enable FMA contraction.
     NoFmaContraction,
+    FmaContraction,
 }
 
 impl Display for NvvmOption {
@@ -142,6 +143,7 @@ impl Display for NvvmOption {
             Self::FastSqrt => "-prec-sqrt=0",
             Self::FastDiv => "-prec-div=0",
             Self::NoFmaContraction => "-fma=0",
+            Self::FmaContraction => "-fma=1",
         };
         f.write_str(res)
     }
@@ -205,7 +207,8 @@ impl FromStr for NvvmOption {
                     Self::NoFmaContraction
                 } else if slice == "1" {
                     // implied
-                    return Err("-fma=1 is default");
+                    //return Err("-fma=1 is default");
+                    Self::FmaContraction
                 } else {
                     return Err("unknown fma option");
                 }

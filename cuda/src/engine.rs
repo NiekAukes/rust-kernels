@@ -1,19 +1,18 @@
-
 use std::io::Write;
 use std::{marker::Tuple, rc::Rc, sync::Arc};
 
 use std::env;
 
 extern crate lazy_static;
-use crate::{get_cuda, kernel};
 use crate::{
     dmem::{DPtr, DSend},
     kernel::CudaDim,
     module::Module,
     CUDAError,
 };
-use std::panic::PanicInfo;
+use crate::{get_cuda, kernel};
 use lazy_static::lazy_static;
+use std::panic::PanicInfo;
 #[derive(Debug)]
 pub struct Kernel<Dim, Args>
 where
@@ -23,7 +22,6 @@ where
     pub code: &'static [u8],
     pub phantom: std::marker::PhantomData<(Dim, Args)>,
 }
-
 
 // compiler cache
 use std::collections::HashMap;
@@ -496,9 +494,17 @@ impl<Dim: CudaDim, T: DSend, U: DSend, V: DSend, W: DSend, A: DSend, B: DSend, C
     }
 }
 
-
-impl<Dim: CudaDim, T: DSend, U: DSend, V: DSend, W: DSend, A: DSend, B: DSend, C: DSend, D: DSend>
-    Kernel<Dim, (T, U, V, W, A, B, C, D)>
+impl<
+        Dim: CudaDim,
+        T: DSend,
+        U: DSend,
+        V: DSend,
+        W: DSend,
+        A: DSend,
+        B: DSend,
+        C: DSend,
+        D: DSend,
+    > Kernel<Dim, (T, U, V, W, A, B, C, D)>
 {
     /// Kernel launcher with four arguments located on the host, blocks until results have been received
     pub fn launch(
