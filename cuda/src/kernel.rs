@@ -12,13 +12,13 @@ use crate::{
 };
 
 pub struct Kernel<'a> {
-    module: &'a Module<'a>,
+    module: &'a Module,
     pub(crate) name: String,
     pub(crate) _function: sys::CUfunction,
 }
 
 impl<'a> Kernel<'a> {
-    pub fn new(module: &'a Module<'a>, name: &str) -> Result<Self, crate::CUDAError> {
+    pub fn new(module: &'a Module, name: &str) -> Result<Self, crate::CUDAError> {
         let mut function = std::ptr::null_mut();
         let name = std::ffi::CString::new(name).unwrap();
         unsafe {
@@ -44,10 +44,9 @@ impl<'a> Kernel<'a> {
         grid_dim: &dyn CudaDim,
         block_dim: &dyn CudaDim,
         shared_mem_bytes: u32,
-        args: &[&DPtr<'_, ()>],
+        args: &[&DPtr<()>],
     ) -> Result<(), crate::CUDAError> {
         let mut args_d = vec![];
-
         for arg in args.into_iter() {
             match arg._pass_mode {
                 DPassMode::Direct => {

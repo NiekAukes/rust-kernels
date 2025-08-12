@@ -169,7 +169,7 @@ impl<T: Sized + Copy + DerefMut> DerefMut for Shared<T> {
 }
 
 impl<T: Copy + DSend> DSend for Shared<T> {
-    fn to_device<'a>(&self) -> Result<DPtr<'a, Self>, CUDAError> {
+    fn to_device(&self) -> Result<DPtr<Self>, CUDAError> {
         let cuda = crate::get_cuda();
         let size = std::mem::size_of::<T>();
         Ok(DPtr {
@@ -184,12 +184,12 @@ impl<T: Copy + DSend> DSend for Shared<T> {
         })
     }
 
-    fn copy_from_device<'a>(&mut self, dptr: DPtr<'a, Self>) -> Result<(), CUDAError> {
+    fn copy_from_device(&mut self, dptr: DPtr<Self>) -> Result<(), CUDAError> {
         Ok(())
     }
 }
 
-impl<T: Copy + DSend> DPtr<'_, Shared<T>> {
+impl<T: Copy + DSend> DPtr<Shared<T>> {
     pub fn retrieve(&self) -> Result<Shared<T>, CUDAError> {
         // reconstruct the shared memory
         let primary = unsafe { transmute(self._device_ptr) };

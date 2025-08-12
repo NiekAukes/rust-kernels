@@ -6,7 +6,12 @@
 #![feature(asm_experimental_arch)]
 #![allow(warnings)] // TODO: remove this
 
-use std::mem::MaybeUninit;
+use std::{
+    mem::MaybeUninit,
+    ptr::{null, null_mut},
+    rc::Rc,
+    sync::{Arc, Mutex},
+};
 
 use nvvm::NvvmError;
 pub mod atom;
@@ -21,15 +26,35 @@ pub mod sys;
 #[macro_use]
 extern crate lazy_static;
 
-static mut CUDA: Option<CUDA> = None;
+unsafe impl std::marker::Send for CUDA {}
 
-pub fn get_cuda() -> &'static CUDA {
-    unsafe {
-        if CUDA.is_none() {
-            CUDA = Some(CUDA::new().unwrap())
+// lazy_static! {
+//     static ref cuda: Arc<Mutex<CUDA>> = Arc::new(Mutex::new(CUDA::dummy()));
+// }
+
+thread_local! {
+    static LOCAL_CUDA: Arc<Mutex<CUDA>> = Arc::new(Mutex::new(CUDA::dummy()));
+}
+
+// pub fn get_cuda() -> Arc<Mutex<CUDA>> {
+//     let mut c = cuda.lock().unwrap();
+//     if c.ctx.is_null() {
+//         *c = CUDA::new().expect("Failed to initialize CUDA");
+//     }
+//     println!("CUDA ctx: {:?}", c.ctx);
+//     drop(c); // Explicitly release lock before returning
+//     cuda.clone()
+// }
+
+pub fn get_cuda() -> Arc<Mutex<CUDA>> {
+    LOCAL_CUDA.with(|local_cuda| {
+        let mut cuda = local_cuda.lock().unwrap();
+        if cuda.ctx.is_null() {
+            *cuda = CUDA::new().expect("Failed to initialize CUDA");
         }
-        CUDA.as_ref().unwrap()
-    }
+        drop(cuda); // Explicitly release lock before returning
+        local_cuda.clone()
+    })
 }
 
 // TODO: add more error handling
@@ -112,13 +137,23 @@ impl CUDA {
         Ok(CUDA { devices, ctx })
     }
 
-    pub fn add_module(&self, module: &[u8]) -> Result<module::Module, CUDAError> {
-        module::Module::new(self, module)
+    // pub fn add_module(&self, module: &[u8]) -> Result<module::Module, CUDAError> {
+    //     module::Module::new(self, module)
+    // }
+
+    pub fn dummy() -> CUDA {
+        CUDA {
+            devices: vec![],
+            ctx: null_mut(),
+        }
     }
 }
 
 impl Drop for CUDA {
     fn drop(&mut self) {
+        if self.ctx.is_null() {
+            return;
+        }
         unsafe { sys::cuCtxDestroy_v2(self.ctx).to_result().unwrap() };
     }
 }

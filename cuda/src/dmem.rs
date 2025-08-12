@@ -1,6 +1,6 @@
 use std::{
     mem::{transmute, MaybeUninit},
-    os::raw::c_void,
+    os::raw::c_void, sync::{Arc, Mutex},
 };
 
 use super::CUDA;
@@ -32,7 +32,7 @@ macro_rules! deepcopy {
     ($t:ty) => {
         impl DeepCopy for $t {}
         impl DSend for $t {
-            fn to_device<'a>(&self) -> Result<DPtr<'a, Self>, CUDAError> {
+            fn to_device<'a>(&self) -> Result<DPtr<Self>, CUDAError> {
                 let cuda = crate::get_cuda();
                 let size = std::mem::size_of::<$t>();
                 let data: &u64 = unsafe { transmute(self) };
@@ -45,12 +45,12 @@ macro_rules! deepcopy {
                 })
             }
 
-            fn copy_from_device<'a>(&mut self, dptr: DPtr<'a, Self>) -> Result<(), CUDAError> {
+            fn copy_from_device<'a>(&mut self, dptr: DPtr<Self>) -> Result<(), CUDAError> {
                 Ok(())
             }
         }
         impl DSend for &$t {
-            fn to_device<'a>(&self) -> Result<DPtr<'a, Self>, CUDAError> {
+            fn to_device<'a>(&self) -> Result<DPtr<Self>, CUDAError> {
                 let cuda = crate::get_cuda();
                 let size = std::mem::size_of::<$t>();
                 let mut dptr = MaybeUninit::uninit();
@@ -74,12 +74,12 @@ macro_rules! deepcopy {
                 })
             }
 
-            fn copy_from_device<'a>(&mut self, dptr: DPtr<'a, Self>) -> Result<(), CUDAError> {
+            fn copy_from_device<'a>(&mut self, dptr: DPtr<Self>) -> Result<(), CUDAError> {
                 Ok(())
             }
         }
 
-        impl DPtr<'_, $t> {
+        impl DPtr<$t> {
             pub fn copy_to_host(&self, container: &mut $t) -> Result<(), CUDAError> {
                 let size = self._size;
                 let data = container as *mut $t as *mut c_void;
@@ -90,7 +90,7 @@ macro_rules! deepcopy {
             }
         }
 
-        impl DBox<'_, $t> {
+        impl DBox<$t> {
             pub fn consume(self) -> Result<$t, CUDAError> {
                 let size = self._inner._size;
                 let data = self._host_data;
@@ -114,16 +114,16 @@ macro_rules! deepcopy {
 
 impl DeepCopy for () {}
 impl DSend for () {
-    fn to_device<'a>(&self) -> Result<DPtr<'a, Self>, CUDAError> {
+    fn to_device(&self) -> Result<DPtr<Self>, CUDAError> {
         panic!("Cannot copy a unit type to device")
     }
 
-    fn copy_from_device<'a>(&mut self, dptr: DPtr<'a, Self>) -> Result<(), CUDAError> {
+    fn copy_from_device(&mut self, dptr: DPtr<Self>) -> Result<(), CUDAError> {
         panic!("Cannot copy a unit type from device")
     }
 }
 
-impl DPtr<'_, ()> {
+impl DPtr<()> {
     pub fn copy_to_host(&self, _container: &mut ()) -> Result<(), CUDAError> {
         Ok(())
     }
@@ -143,19 +143,18 @@ deepcopy!(f64);
 deepcopy!(bool);
 deepcopy!(char);
 
-
 pub trait DSend: Sized {
-    fn to_device<'a>(&self) -> Result<DPtr<'a, Self>, CUDAError>;
-    fn to_dptr<'a>(&self) -> Result<DPtr<'_, ()>, CUDAError> {
+    fn to_device(&self) -> Result<DPtr<Self>, CUDAError>;
+    fn to_dptr(&self) -> Result<DPtr<()>, CUDAError> {
         let dptr = self.to_device()?;
         Ok(unsafe { transmute(dptr) })
     }
 
-    fn copy_from_device<'a>(&mut self, dptr: DPtr<'a, Self>) -> Result<(), CUDAError>;
+    fn copy_from_device(&mut self, dptr: DPtr<Self>) -> Result<(), CUDAError>;
 }
 
 pub trait DSendOwned: DSend + ToOwned {
-    fn to_device_boxed<'a>(self) -> Result<DBox<'a, Self>, CUDAError> {
+    fn to_device_boxed(self) -> Result<DBox<Self>, CUDAError> {
         let dptr = self.to_device()?;
         Ok(DBox {
             _inner: dptr,
@@ -163,7 +162,7 @@ pub trait DSendOwned: DSend + ToOwned {
         })
     }
 
-    fn to_dptr<'a>(self) -> Result<DPtr<'a, ()>, CUDAError> {
+    fn to_dptr(self) -> Result<DPtr<()>, CUDAError> {
         let dptr = self.to_device()?;
         Ok(unsafe { transmute(dptr) })
     }
@@ -178,28 +177,27 @@ pub(crate) enum DPassMode {
     Direct,
     Scalar { data: u64 },
     Pair { data: u64, _size: usize },
-
 }
 
 /// A reference to data on the device
-pub struct DPtr<'a, T: DSend> {
-    pub(crate) cuda: &'a CUDA,
+pub struct DPtr<T: DSend> {
+    pub(crate) cuda: Arc<Mutex<CUDA>>,
     pub(crate) _device_ptr: *mut T,
     pub(crate) _size: usize,
     pub(crate) _pass_mode: DPassMode,
 }
 
-impl<T: DSend> DPtr<'_, T> {
+impl<T: DSend> DPtr<T> {
     pub fn size(&self) -> usize {
         self._size
     }
 
-    pub fn pass(&mut self) -> &mut DPtr<'_, ()> {
+    pub fn pass(&mut self) -> &mut DPtr<()> {
         unsafe { transmute(self) }
     }
 }
 
-impl<'a, T: DeepCopy> DPtr<'a, Vec<T>> {
+impl<T: DeepCopy> DPtr<Vec<T>> {
     pub fn copy_to_host(&self, container: &mut Vec<T>) -> Result<(), CUDAError> {
         let size = self._size;
         let data = container.as_mut_ptr() as *mut c_void;
@@ -210,7 +208,7 @@ impl<'a, T: DeepCopy> DPtr<'a, Vec<T>> {
     }
 }
 
-impl<'a, T: DeepCopy> DPtr<'a, &[T]> {
+impl<T: DeepCopy> DPtr<&[T]> {
     pub fn copy_to_host(&self, container: &mut [T]) -> Result<(), CUDAError> {
         let size = self._size;
         let data = container.as_mut_ptr() as *mut c_void;
@@ -221,7 +219,7 @@ impl<'a, T: DeepCopy> DPtr<'a, &[T]> {
     }
 }
 
-impl<'a, T: DeepCopy> DPtr<'a, &mut [T]> {
+impl<T: DeepCopy> DPtr<&mut [T]> {
     pub fn copy_to_host(&self, container: &mut [T]) -> Result<(), CUDAError> {
         let size = self._size;
         let data = container.as_mut_ptr() as *mut c_void;
@@ -298,7 +296,7 @@ impl<'a, T: DeepCopy> DPtr<'a, &mut [T]> {
 // }
 
 impl<T: DeepCopy> DSend for &[T] {
-    fn to_device<'a>(&self) -> Result<DPtr<'a, Self>, CUDAError> {
+    fn to_device(&self) -> Result<DPtr<Self>, CUDAError> {
         let cuda = crate::get_cuda();
         let size = self.len() * std::mem::size_of::<T>();
         let mut dptr = MaybeUninit::uninit();
@@ -320,7 +318,7 @@ impl<T: DeepCopy> DSend for &[T] {
         })
     }
 
-    fn copy_from_device<'a>(&mut self, dptr: DPtr<'a, Self>) -> Result<(), CUDAError> {
+    fn copy_from_device<'a>(&mut self, dptr: DPtr<Self>) -> Result<(), CUDAError> {
         // we can't copy to an immutable slice, so just do nothing
         //Err(CUDAError::Unknown(0)) // should not even be possible
         Ok(())
@@ -328,7 +326,7 @@ impl<T: DeepCopy> DSend for &[T] {
 }
 
 impl<T: DeepCopy> DSend for &mut [T] {
-    fn to_device<'a>(&self) -> Result<DPtr<'a, Self>, CUDAError> {
+    fn to_device(&self) -> Result<DPtr<Self>, CUDAError> {
         let cuda = crate::get_cuda();
         let size = self.len() * std::mem::size_of::<T>();
         let mut dptr = MaybeUninit::uninit();
@@ -350,13 +348,13 @@ impl<T: DeepCopy> DSend for &mut [T] {
         })
     }
 
-    fn copy_from_device<'a>(&mut self, dptr: DPtr<'a, Self>) -> Result<(), CUDAError> {
+    fn copy_from_device<'a>(&mut self, dptr: DPtr<Self>) -> Result<(), CUDAError> {
         dptr.copy_to_host(self)
     }
 }
 
 impl<T: DeepCopy> DSend for Vec<T> {
-    fn to_device<'a>(&self) -> Result<DPtr<'a, Self>, CUDAError> {
+    fn to_device(&self) -> Result<DPtr<Self>, CUDAError> {
         let cuda = crate::get_cuda();
         let size = self.len() * std::mem::size_of::<T>();
         let mut dptr = MaybeUninit::uninit();
@@ -375,7 +373,7 @@ impl<T: DeepCopy> DSend for Vec<T> {
         })
     }
 
-    fn copy_from_device<'a>(&mut self, dptr: DPtr<'a, Self>) -> Result<(), CUDAError> {
+    fn copy_from_device(&mut self, dptr: DPtr<Self>) -> Result<(), CUDAError> {
         dptr.copy_to_host(self)
     }
 }
@@ -390,17 +388,17 @@ impl<T: DeepCopy + Clone> DSendOwned for Vec<T> {}
 /// Very similar to `DPtr`, but the box takes ownership of the host data
 /// and returns it when it is consumed
 
-pub struct DBox<'a, T: DSend + ToOwned> {
-    pub(crate) _inner: DPtr<'a, T>,
+pub struct DBox<T: DSend + ToOwned> {
+    pub(crate) _inner: DPtr<T>,
     _host_data: T,
 }
 
-impl<T: DSend + ToOwned> DBox<'_, T> {
+impl<T: DSend + ToOwned> DBox<T> {
     pub fn size(&self) -> usize {
         self._inner.size()
     }
 
-    pub fn pass(&mut self) -> &mut DPtr<'_, ()> {
+    pub fn pass(&mut self) -> &mut DPtr<()> {
         self._inner.pass()
     }
 }
@@ -439,22 +437,22 @@ fn consume_box<T: DSend + ToOwned>(dbox: DBox<T>) -> Result<T, CUDAError> {
 //     }
 // }
 
-impl<'a, T: DeepCopy + ToOwned + Clone> DBox<'a, Vec<T>> {
+impl<T: DeepCopy + ToOwned + Clone> DBox<Vec<T>> {
     pub fn consume(self) -> Result<Vec<T>, CUDAError> {
         let mut data = self._host_data;
         self._inner.copy_to_host(&mut data)?;
         Ok(data)
     }
 
-    pub fn as_mut_slice(&mut self) -> &mut DPtr<'a, &mut [T]> {
+    pub fn as_mut_slice(&mut self) -> &mut DPtr<&mut [T]> {
         unsafe { transmute(&mut self._inner) }
     }
 }
 
-impl<'a, 'b, T: DeepCopy + ToOwned + Clone> DPtr<'a, &'b [T]> {
-    pub fn to_raw_ptr(&self) -> DPtr<'a, &'b [T]> {
+impl<'b, T: DeepCopy + ToOwned + Clone> DPtr<&'b [T]> {
+    pub fn to_raw_ptr(&self) -> DPtr<&'b [T]> {
         DPtr {
-            cuda: self.cuda,
+            cuda: self.cuda.clone(),
             _device_ptr: self._device_ptr,
             _size: self._size,
             _pass_mode: DPassMode::Direct,
@@ -515,21 +513,25 @@ impl<T: Sized + Copy> Buffer<T> {
         let bc = size * std::mem::size_of::<T>();
         // allocate the device memory
         let device_ptr = unsafe {
-            sys::cuMemAlloc_v2(dptr.as_mut_ptr(), bc).to_result()?;
+            sys::cuMemAlloc_v2(dptr.as_mut_ptr(), bc).to_result().unwrap();
             dptr.assume_init() as *mut T
         };
         Ok(Buffer(device_ptr, size))
     }
 
     pub fn retrieve(&self) -> Result<Vec<T>, CUDAError> {
-        let mut data = Vec::with_capacity(self.1);
+        let mut data: Vec<T> = Vec::with_capacity(self.1);
         let bc = self.1 * std::mem::size_of::<T>();
         unsafe {
             data.set_len(self.1);
         }
         unsafe {
+            // mark the vector memory as pinned
+            // this makes the transfer faster
+            sys::cuMemHostRegister_v2(data.as_mut_ptr() as *mut c_void, bc, 0);
             sys::cuMemcpyDtoH_v2(data.as_mut_ptr() as *mut c_void, self.0 as u64, bc)
                 .to_result()?;
+            sys::cuMemHostUnregister(data.as_mut_ptr() as *mut c_void);
         }
         Ok(data)
     }
@@ -542,7 +544,7 @@ impl<T: Sized + Copy> Buffer<T> {
 }
 
 impl<T: Sized + Copy> DSend for Buffer<T> {
-    fn to_device<'a>(&self) -> Result<DPtr<'a, Self>, CUDAError> {
+    fn to_device(&self) -> Result<DPtr<Self>, CUDAError> {
         let cuda = crate::get_cuda();
         let size = std::mem::size_of::<T>() * self.1;
         Ok(DPtr {
@@ -556,12 +558,12 @@ impl<T: Sized + Copy> DSend for Buffer<T> {
         })
     }
 
-    fn copy_from_device<'a>(&mut self, dptr: DPtr<'a, Self>) -> Result<(), CUDAError> {
+    fn copy_from_device(&mut self, dptr: DPtr<Self>) -> Result<(), CUDAError> {
         Ok(())
     }
 }
 
-impl<T: Sized + Copy> DPtr<'_, Buffer<T>> {
+impl<T: Sized + Copy> DPtr<Buffer<T>> {
     pub fn retrieve(&self) -> Result<Vec<T>, CUDAError> {
         let size = match self._pass_mode {
             DPassMode::Pair { data, _size } => data as usize,
@@ -606,7 +608,5 @@ impl<T: Sized + Copy> DPtr<'_, Buffer<T>> {
 //         self.x = x;
 //     }
 // }
-
-
 
 deepcopy!(crate::atom::AtomI32);

@@ -36,6 +36,14 @@ pub fn syncthreads() {
     }
 }
 
+#[inline(always)]
+#[target = "nvvm"]
+pub fn syncwarp() {
+    unsafe {
+        asm!("bar.warp.sync 0;", options(nostack, preserves_flags));
+    }
+}
+
 #[lang = "kernel_panic_impl"]
 #[inline(always)]
 pub fn kernel_panic_impl(info: &PanicInfo) -> ! {

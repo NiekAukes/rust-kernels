@@ -1,4 +1,6 @@
 use std::mem::MaybeUninit;
+use std::sync::Arc;
+use std::sync::Mutex;
 
 use crate::kernel::Kernel;
 use crate::CUDAError;
@@ -7,26 +9,22 @@ use crate::CUDA;
 use crate::sys;
 
 #[derive(Debug, Clone)]
-pub struct Module<'a> {
-    cuda: &'a CUDA,
+pub struct Module {
+    cuda: Arc<Mutex<CUDA>>,
     pub(crate) _module: sys::CUmodule,
 }
-unsafe impl Send for Module<'_> {}
-unsafe impl Sync for Module<'_> {}
+unsafe impl Send for Module {}
+unsafe impl Sync for Module {}
 
-impl<'a> Module<'a> {
-    pub fn new(cuda: &'a CUDA, cubin: &[u8]) -> Result<Self, CUDAError> {
+impl Module {
+    pub fn new(cuda: &Arc<Mutex<CUDA>>, cubin: &[u8]) -> Result<Self, CUDAError> {
         let mut module = MaybeUninit::uninit();
         let image = cubin.as_ptr() as *const std::ffi::c_void;
         unsafe { sys::cuModuleLoadData(module.as_mut_ptr(), image).to_result()? };
         Ok(Self {
-            cuda,
+            cuda: Arc::clone(cuda),
             _module: unsafe { module.assume_init() },
         })
-    }
-
-    pub fn cuda(&self) -> &CUDA {
-        self.cuda
     }
 
     pub fn get_kernel(&self, name: &str) -> Result<Kernel, CUDAError> {
@@ -34,9 +32,8 @@ impl<'a> Module<'a> {
     }
 }
 
-impl Drop for Module<'_> {
+impl Drop for Module {
     fn drop(&mut self) {
-        println!("Unloading module");
         unsafe { sys::cuModuleUnload(self._module) };
     }
 }

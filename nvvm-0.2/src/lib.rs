@@ -116,6 +116,8 @@ pub enum NvvmOption {
     GenLineInfo,
     /// Whether to disable optimizations (opt level 0).
     NoOpts,
+    /// Optimization level 3.
+    OptLevel3,
     /// The NVVM arch to use.
     Arch(NvvmArch),
     /// Whether to flush denormal values to zero when performing single-precision
@@ -129,6 +131,7 @@ pub enum NvvmOption {
     FastDiv,
     /// Whether to enable FMA contraction.
     NoFmaContraction,
+    /// Whether to enable FMA contraction.
     FmaContraction,
 }
 
@@ -138,6 +141,7 @@ impl Display for NvvmOption {
             Self::GenDebugInfo => "-g",
             Self::GenLineInfo => "-generate-line-info",
             Self::NoOpts => "-opt=0",
+            Self::OptLevel3 => "-opt=3",
             Self::Arch(arch) => return f.write_str(&format!("-arch={}", arch)),
             Self::Ftz => "-ftz=1",
             Self::FastSqrt => "-prec-sqrt=0",
@@ -163,7 +167,7 @@ impl FromStr for NvvmOption {
                     Self::NoOpts
                 } else if slice == "3" {
                     // implied
-                    return Err("-opt=3 is default");
+                    Self::OptLevel3
                 } else {
                     return Err("unknown optimization level");
                 }
@@ -253,6 +257,11 @@ pub enum NvvmArch {
     Compute72,
     Compute75,
     Compute80,
+    Compute87,
+    Compute90,
+    Compute90a,
+    Compute100,
+    Compute110,
 }
 
 impl Display for NvvmArch {
