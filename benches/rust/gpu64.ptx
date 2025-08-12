@@ -10,297 +10,350 @@
 .target sm_52
 .address_size 64
 
-	// .globl	_ZN4cuda3gpu12global_tid_x17ha36a33b0294aba95E
-.visible .func _ZN4cuda4dmem15Buffer$LT$T$GT$3set17h98f419e728313cf8E
-(
-	.param .b64 _ZN4cuda4dmem15Buffer$LT$T$GT$3set17h98f419e728313cf8E_param_0,
-	.param .b64 _ZN4cuda4dmem15Buffer$LT$T$GT$3set17h98f419e728313cf8E_param_1,
-	.param .b32 _ZN4cuda4dmem15Buffer$LT$T$GT$3set17h98f419e728313cf8E_param_2
+	// .globl	_ZN4cuda3gpu26kernel_panic_nounwind_impl17h475d8c91e113d06eE
+.visible .global .align 1 .b8 static_0[8] = {};
+.visible .global .align 8 .u64 static_1 = generic(static_0);
+.visible .global .align 1 .b8 static_2[82] = {117, 110, 115, 97, 102, 101, 32, 112, 114, 101, 99, 111, 110, 100, 105, 116, 105, 111, 110, 40, 115, 41, 32, 118, 105, 111, 108, 97, 116, 101, 100, 58, 32, 104, 105, 110, 116, 58, 58, 117, 110, 114, 101, 97, 99, 104, 97, 98, 108, 101, 95, 117, 110, 99, 104, 101, 99, 107, 101, 100, 32, 109, 117, 115, 116, 32, 110, 101, 118, 101, 114, 32, 98, 101, 32, 114, 101, 97, 99, 104, 101, 100};
+.visible .global .align 1 .b8 static_3[27] = {115, 114, 99, 47, 109, 97, 105, 110, 46, 114, 115, 11, 0, 0, 0, 0, 0, 0, 0, 22, 0, 0, 0, 13};
+.visible .global .align 1 .b8 static_4[27] = {115, 114, 99, 47, 109, 97, 105, 110, 46, 114, 115, 11, 0, 0, 0, 0, 0, 0, 0, 22, 0, 0, 0, 13};
+.visible .global .align 1 .b8 static_5[27] = {115, 114, 99, 47, 109, 97, 105, 110, 46, 114, 115, 11, 0, 0, 0, 0, 0, 0, 0, 23, 0, 0, 0, 13};
+.visible .global .align 1 .b8 static_6[27] = {115, 114, 99, 47, 109, 97, 105, 110, 46, 114, 115, 11, 0, 0, 0, 0, 0, 0, 0, 23, 0, 0, 0, 13};
+.visible .global .align 1 .b8 static_7[27] = {115, 114, 99, 47, 109, 97, 105, 110, 46, 114, 115, 11, 0, 0, 0, 0, 0, 0, 0, 47, 0, 0, 0, 16};
+.visible .global .align 1 .b8 static_8[27] = {115, 114, 99, 47, 109, 97, 105, 110, 46, 114, 115, 11, 0, 0, 0, 0, 0, 0, 0, 47, 0, 0, 0, 38};
+.visible .global .align 1 .b8 static_9[27] = {115, 114, 99, 47, 109, 97, 105, 110, 46, 114, 115, 11, 0, 0, 0, 0, 0, 0, 0, 34, 0, 0, 0, 15};
+.visible .global .align 1 .b8 static_10[27] = {115, 114, 99, 47, 109, 97, 105, 110, 46, 114, 115, 11, 0, 0, 0, 0, 0, 0, 0, 34, 0, 0, 0, 37};
+.visible .global .align 1 .b8 static_11[27] = {115, 114, 99, 47, 109, 97, 105, 110, 46, 114, 115, 11, 0, 0, 0, 0, 0, 0, 0, 35, 0, 0, 0, 15};
+.visible .global .align 1 .b8 static_12[27] = {115, 114, 99, 47, 109, 97, 105, 110, 46, 114, 115, 11, 0, 0, 0, 0, 0, 0, 0, 35, 0, 0, 0, 43};
+.visible .global .align 1 .b8 static_13[27] = {115, 114, 99, 47, 109, 97, 105, 110, 46, 114, 115, 11, 0, 0, 0, 0, 0, 0, 0, 36, 0, 0, 0, 15};
+.visible .global .align 1 .b8 static_14[27] = {115, 114, 99, 47, 109, 97, 105, 110, 46, 114, 115, 11, 0, 0, 0, 0, 0, 0, 0, 36, 0, 0, 0, 43};
+.visible .global .align 1 .b8 static_15[27] = {115, 114, 99, 47, 109, 97, 105, 110, 46, 114, 115, 11, 0, 0, 0, 0, 0, 0, 0, 37, 0, 0, 0, 15};
+.visible .global .align 1 .b8 static_16[27] = {115, 114, 99, 47, 109, 97, 105, 110, 46, 114, 115, 11, 0, 0, 0, 0, 0, 0, 0, 37, 0, 0, 0, 43};
+.visible .global .align 1 .b8 static_17[27] = {115, 114, 99, 47, 109, 97, 105, 110, 46, 114, 115, 11, 0, 0, 0, 0, 0, 0, 0, 38, 0, 0, 0, 15};
+.visible .global .align 1 .b8 static_18[27] = {115, 114, 99, 47, 109, 97, 105, 110, 46, 114, 115, 11, 0, 0, 0, 0, 0, 0, 0, 38, 0, 0, 0, 43};
+.visible .global .align 1 .b8 static_19[27] = {115, 114, 99, 47, 109, 97, 105, 110, 46, 114, 115, 11, 0, 0, 0, 0, 0, 0, 0, 39, 0, 0, 0, 15};
+.visible .global .align 1 .b8 static_20[27] = {115, 114, 99, 47, 109, 97, 105, 110, 46, 114, 115, 11, 0, 0, 0, 0, 0, 0, 0, 39, 0, 0, 0, 43};
+.visible .global .align 1 .b8 static_21[27] = {115, 114, 99, 47, 109, 97, 105, 110, 46, 114, 115, 11, 0, 0, 0, 0, 0, 0, 0, 40, 0, 0, 0, 15};
+.visible .global .align 1 .b8 static_22[27] = {115, 114, 99, 47, 109, 97, 105, 110, 46, 114, 115, 11, 0, 0, 0, 0, 0, 0, 0, 40, 0, 0, 0, 43};
+.visible .global .align 1 .b8 static_23[27] = {115, 114, 99, 47, 109, 97, 105, 110, 46, 114, 115, 11, 0, 0, 0, 0, 0, 0, 0, 41, 0, 0, 0, 15};
+.visible .global .align 1 .b8 static_24[27] = {115, 114, 99, 47, 109, 97, 105, 110, 46, 114, 115, 11, 0, 0, 0, 0, 0, 0, 0, 41, 0, 0, 0, 43};
+
+.visible .func _ZN4cuda3gpu26kernel_panic_nounwind_impl17h475d8c91e113d06eE(
+	.param .b64 _ZN4cuda3gpu26kernel_panic_nounwind_impl17h475d8c91e113d06eE_param_0,
+	.param .b64 _ZN4cuda3gpu26kernel_panic_nounwind_impl17h475d8c91e113d06eE_param_1
 )
-;
-.visible .global .align 1 .b8 global0[24] = {0, 0, 0, 0, 0, 0, 0, 0, 50, 0, 0, 0, 0, 0, 0, 0, 235, 1, 0, 0, 13};
-.visible .global .align 1 .b8 global1[24] = {0, 0, 0, 0, 0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 19, 0, 0, 0, 13};
-.visible .global .align 1 .b8 global2[24] = {0, 0, 0, 0, 0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 19, 0, 0, 0, 13};
-.visible .global .align 1 .b8 global3[24] = {0, 0, 0, 0, 0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 20, 0, 0, 0, 13};
-.visible .global .align 1 .b8 global4[24] = {0, 0, 0, 0, 0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 20, 0, 0, 0, 13};
-.visible .global .align 1 .b8 global5[24] = {0, 0, 0, 0, 0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 27, 0, 0, 0, 20};
-.visible .global .align 1 .b8 global6[24] = {0, 0, 0, 0, 0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 27, 0, 0, 0, 42};
-
-.visible .func  (.param .b32 func_retval0) _ZN4cuda3gpu12global_tid_x17ha36a33b0294aba95E()
+.noreturn 
 {
-	.local .align 4 .b8 	__local_depot0[12];
-	.reg .b64 	%SP;
-	.reg .b64 	%SPL;
-	.reg .b32 	%r<6>;
 
 
-	mov.u64 	%SPL, __local_depot0;
-	cvta.local.u64 	%SP, %SPL;
-	mov.u32 	%r1, %tid.x;
-	st.u32 	[%SP+0], %r1;
-	mov.u32 	%r2, %ctaid.x;
-	st.u32 	[%SP+4], %r2;
-	mov.u32 	%r3, %ntid.x;
-	st.u32 	[%SP+8], %r3;
-	mul.lo.s32 	%r4, %r2, %r3;
-	add.s32 	%r5, %r1, %r4;
-	st.param.b32 	[func_retval0+0], %r5;
-	ret;
+
+	trap;
 
 }
-	// .globl	_ZN12rust_kernels10matrix_mul17h6bf2fc4dc43165baE
-.visible .entry _ZN12rust_kernels10matrix_mul17h6bf2fc4dc43165baE(
-	.param .u64 _ZN12rust_kernels10matrix_mul17h6bf2fc4dc43165baE_param_0,
-	.param .u64 _ZN12rust_kernels10matrix_mul17h6bf2fc4dc43165baE_param_1,
-	.param .u64 _ZN12rust_kernels10matrix_mul17h6bf2fc4dc43165baE_param_2,
-	.param .u64 _ZN12rust_kernels10matrix_mul17h6bf2fc4dc43165baE_param_3,
-	.param .u64 _ZN12rust_kernels10matrix_mul17h6bf2fc4dc43165baE_param_4,
-	.param .u64 _ZN12rust_kernels10matrix_mul17h6bf2fc4dc43165baE_param_5,
-	.param .u32 _ZN12rust_kernels10matrix_mul17h6bf2fc4dc43165baE_param_6
+	// .globl	_ZN4cuda4dmem15Buffer$LT$T$GT$3set17h0322ab43b2f9fd10E
+.visible .func _ZN4cuda4dmem15Buffer$LT$T$GT$3set17h0322ab43b2f9fd10E(
+	.param .b64 _ZN4cuda4dmem15Buffer$LT$T$GT$3set17h0322ab43b2f9fd10E_param_0,
+	.param .b64 _ZN4cuda4dmem15Buffer$LT$T$GT$3set17h0322ab43b2f9fd10E_param_1,
+	.param .b32 _ZN4cuda4dmem15Buffer$LT$T$GT$3set17h0322ab43b2f9fd10E_param_2
 )
 {
-	.local .align 8 .b8 	__local_depot1[88];
-	.reg .b64 	%SP;
-	.reg .b64 	%SPL;
-	.reg .pred 	%p<18>;
-	.reg .b32 	%r<23>;
-	.reg .b64 	%rd<15>;
+	.reg .pred 	%p<2>;
+	.reg .b32 	%r<2>;
+	.reg .b64 	%rd<8>;
 
 
-	mov.u64 	%SPL, __local_depot1;
-	cvta.local.u64 	%SP, %SPL;
-	ld.param.u64 	%rd3, [_ZN12rust_kernels10matrix_mul17h6bf2fc4dc43165baE_param_0];
-	ld.param.u64 	%rd4, [_ZN12rust_kernels10matrix_mul17h6bf2fc4dc43165baE_param_1];
-	ld.param.u64 	%rd5, [_ZN12rust_kernels10matrix_mul17h6bf2fc4dc43165baE_param_2];
-	ld.param.u64 	%rd6, [_ZN12rust_kernels10matrix_mul17h6bf2fc4dc43165baE_param_3];
-	ld.param.u64 	%rd7, [_ZN12rust_kernels10matrix_mul17h6bf2fc4dc43165baE_param_4];
-	ld.param.u64 	%rd8, [_ZN12rust_kernels10matrix_mul17h6bf2fc4dc43165baE_param_5];
-	ld.param.u32 	%r6, [_ZN12rust_kernels10matrix_mul17h6bf2fc4dc43165baE_param_6];
-	st.u64 	[%SP+0], %rd7;
-	st.u64 	[%SP+8], %rd8;
-	st.u64 	[%SP+24], %rd3;
-	st.u64 	[%SP+32], %rd4;
-	st.u64 	[%SP+40], %rd5;
-	st.u64 	[%SP+48], %rd6;
-	st.u32 	[%SP+56], %r6;
-	{ // callseq 0, 0
-	.reg .b32 temp_param_reg;
-	.param .b32 retval0;
-	call.uni (retval0), 
-	_ZN4cuda3gpu12global_tid_x17ha36a33b0294aba95E, 
-	(
-	);
-	ld.param.b32 	%r1, [retval0+0];
-	} // callseq 0
-	st.u32 	[%SP+60], %r1;
-	setp.eq.s32 	%p1, %r6, 0;
-	@%p1 bra 	$L__BB1_12;
+	ld.param.u64 	%rd3, [_ZN4cuda4dmem15Buffer$LT$T$GT$3set17h0322ab43b2f9fd10E_param_0];
+	ld.param.u64 	%rd2, [_ZN4cuda4dmem15Buffer$LT$T$GT$3set17h0322ab43b2f9fd10E_param_1];
+	ld.param.u32 	%r1, [_ZN4cuda4dmem15Buffer$LT$T$GT$3set17h0322ab43b2f9fd10E_param_2];
+	add.s64 	%rd1, %rd3, 8;
+	ld.u64 	%rd4, [%rd3+8];
+	setp.gt.u64 	%p1, %rd4, %rd2;
+	@%p1 bra 	$L__BB1_2;
 	bra.uni 	$L__BB1_1;
 
-$L__BB1_1:
-	setp.eq.s32 	%p2, %r6, -1;
-	setp.eq.s32 	%p3, %r1, -2147483648;
-	and.pred  	%p4, %p2, %p3;
-	@%p4 bra 	$L__BB1_12;
-	bra.uni 	$L__BB1_2;
-
 $L__BB1_2:
-	div.s32 	%r2, %r1, %r6;
-	st.u32 	[%SP+64], %r2;
-	setp.eq.s32 	%p5, %r6, 0;
-	@%p5 bra 	$L__BB1_12;
-	bra.uni 	$L__BB1_3;
-
-$L__BB1_3:
-	setp.eq.s32 	%p6, %r6, -1;
-	setp.eq.s32 	%p7, %r1, -2147483648;
-	and.pred  	%p8, %p6, %p7;
-	@%p8 bra 	$L__BB1_12;
-	bra.uni 	$L__BB1_4;
-
-$L__BB1_4:
-	rem.s32 	%r3, %r1, %r6;
-	st.u32 	[%SP+68], %r3;
-	setp.lt.s32 	%p9, %r2, %r6;
-	not.pred 	%p10, %p9;
-	@%p10 bra 	$L__BB1_13;
-	bra.uni 	$L__BB1_5;
-
-$L__BB1_5:
-	setp.lt.s32 	%p11, %r3, %r6;
-	not.pred 	%p12, %p11;
-	@%p12 bra 	$L__BB1_13;
-	bra.uni 	$L__BB1_6;
-
-$L__BB1_6:
-	mov.u32 	%r7, 0;
-	st.u32 	[%SP+16], %r7;
-	st.u32 	[%SP+20], %r7;
-	bra.uni 	$L__BB1_7;
-
-$L__BB1_7:
-	ld.u32 	%r8, [%SP+20];
-	setp.lt.s32 	%p13, %r8, %r6;
-	@%p13 bra 	$L__BB1_9;
-	bra.uni 	$L__BB1_8;
-
-$L__BB1_8:
-	mul.lo.s32 	%r9, %r2, %r6;
-	add.s32 	%r10, %r9, %r3;
-	st.u32 	[%SP+72], %r10;
-	cvt.s64.s32 	%rd9, %r10;
-	ld.u32 	%r11, [%SP+16];
-	add.u64 	%rd10, %SP, 0;
-	{ // callseq 1, 0
-	.reg .b32 temp_param_reg;
-	.param .b64 param0;
-	st.param.b64 	[param0+0], %rd10;
-	.param .b64 param1;
-	st.param.b64 	[param1+0], %rd9;
-	.param .b32 param2;
-	st.param.b32 	[param2+0], %r11;
-	call.uni 
-	_ZN4cuda4dmem15Buffer$LT$T$GT$3set17h98f419e728313cf8E, 
-	(
-	param0, 
-	param1, 
-	param2
-	);
-	} // callseq 1
-	bra.uni 	$L__BB1_13;
-
-$L__BB1_9:
-	mul.lo.s32 	%r12, %r2, %r6;
-	ld.u32 	%r13, [%SP+20];
-	add.s32 	%r14, %r12, %r13;
-	st.u32 	[%SP+76], %r14;
-	ld.u32 	%r15, [%SP+20];
-	mul.lo.s32 	%r16, %r15, %r6;
-	add.s32 	%r4, %r16, %r3;
-	st.u32 	[%SP+80], %r4;
-	cvt.s64.s32 	%rd1, %r14;
-	setp.lt.u64 	%p14, %rd1, %rd4;
-	not.pred 	%p15, %p14;
-	@%p15 bra 	$L__BB1_12;
-	bra.uni 	$L__BB1_10;
-
-$L__BB1_10:
-	shl.b64 	%rd11, %rd1, 2;
-	add.s64 	%rd12, %rd3, %rd11;
-	ld.u32 	%r5, [%rd12];
-	cvt.s64.s32 	%rd2, %r4;
-	setp.lt.u64 	%p16, %rd2, %rd6;
-	not.pred 	%p17, %p16;
-	@%p17 bra 	$L__BB1_12;
-	bra.uni 	$L__BB1_11;
-
-$L__BB1_11:
-	shl.b64 	%rd13, %rd2, 2;
-	add.s64 	%rd14, %rd5, %rd13;
-	ld.u32 	%r17, [%rd14];
-	mul.lo.s32 	%r18, %r5, %r17;
-	ld.u32 	%r19, [%SP+16];
-	add.s32 	%r20, %r19, %r18;
-	st.u32 	[%SP+16], %r20;
-	ld.u32 	%r21, [%SP+20];
-	add.s32 	%r22, %r21, 1;
-	st.u32 	[%SP+20], %r22;
-	bra.uni 	$L__BB1_7;
-
-$L__BB1_12:
-	trap;
-
-$L__BB1_13:
+	ld.u64 	%rd5, [%rd1+-8];
+	shl.b64 	%rd6, %rd2, 2;
+	add.s64 	%rd7, %rd5, %rd6;
+	st.u32 	[%rd7], %r1;
 	ret;
 
-}
-	// .globl	_ZN4core3ptr7mut_ptr31_$LT$impl$u20$$BP$mut$u20$T$GT$3add17h2f83b7147c177dd8E
-.visible .func  (.param .b64 func_retval0) _ZN4core3ptr7mut_ptr31_$LT$impl$u20$$BP$mut$u20$T$GT$3add17h2f83b7147c177dd8E(
-	.param .b64 _ZN4core3ptr7mut_ptr31_$LT$impl$u20$$BP$mut$u20$T$GT$3add17h2f83b7147c177dd8E_param_0,
-	.param .b64 _ZN4core3ptr7mut_ptr31_$LT$impl$u20$$BP$mut$u20$T$GT$3add17h2f83b7147c177dd8E_param_1
-)
-{
-	.local .align 8 .b8 	__local_depot2[16];
-	.reg .b64 	%SP;
-	.reg .b64 	%SPL;
-	.reg .b64 	%rd<5>;
-
-
-	mov.u64 	%SPL, __local_depot2;
-	cvta.local.u64 	%SP, %SPL;
-	ld.param.u64 	%rd1, [_ZN4core3ptr7mut_ptr31_$LT$impl$u20$$BP$mut$u20$T$GT$3add17h2f83b7147c177dd8E_param_0];
-	ld.param.u64 	%rd2, [_ZN4core3ptr7mut_ptr31_$LT$impl$u20$$BP$mut$u20$T$GT$3add17h2f83b7147c177dd8E_param_1];
-	st.u64 	[%SP+0], %rd1;
-	st.u64 	[%SP+8], %rd2;
-	shl.b64 	%rd3, %rd2, 2;
-	add.s64 	%rd4, %rd1, %rd3;
-	st.param.b64 	[func_retval0+0], %rd4;
-	ret;
+$L__BB1_1:
+	trap;
 
 }
-	// .globl	_ZN4cuda4dmem15Buffer$LT$T$GT$3set17h98f419e728313cf8E
-.visible .func _ZN4cuda4dmem15Buffer$LT$T$GT$3set17h98f419e728313cf8E(
-	.param .b64 _ZN4cuda4dmem15Buffer$LT$T$GT$3set17h98f419e728313cf8E_param_0,
-	.param .b64 _ZN4cuda4dmem15Buffer$LT$T$GT$3set17h98f419e728313cf8E_param_1,
-	.param .b32 _ZN4cuda4dmem15Buffer$LT$T$GT$3set17h98f419e728313cf8E_param_2
+	// .globl	_ZN4core4hint21unreachable_unchecked18precondition_check17h18af1954815f4ee4E
+.visible .func _ZN4core4hint21unreachable_unchecked18precondition_check17h18af1954815f4ee4E()
+.noreturn 
+{
+
+
+
+	trap;
+
+}
+	// .globl	_ZN12rust_kernels10matrix_mul17h4f87c4a65a00d4eeE
+.visible .entry _ZN12rust_kernels10matrix_mul17h4f87c4a65a00d4eeE(
+	.param .u64 _ZN12rust_kernels10matrix_mul17h4f87c4a65a00d4eeE_param_0,
+	.param .u64 _ZN12rust_kernels10matrix_mul17h4f87c4a65a00d4eeE_param_1,
+	.param .u64 _ZN12rust_kernels10matrix_mul17h4f87c4a65a00d4eeE_param_2,
+	.param .u64 _ZN12rust_kernels10matrix_mul17h4f87c4a65a00d4eeE_param_3,
+	.param .u64 _ZN12rust_kernels10matrix_mul17h4f87c4a65a00d4eeE_param_4,
+	.param .u64 _ZN12rust_kernels10matrix_mul17h4f87c4a65a00d4eeE_param_5,
+	.param .u32 _ZN12rust_kernels10matrix_mul17h4f87c4a65a00d4eeE_param_6
 )
 {
-	.local .align 8 .b8 	__local_depot3[32];
-	.reg .b64 	%SP;
-	.reg .b64 	%SPL;
-	.reg .pred 	%p<3>;
-	.reg .b32 	%r<2>;
-	.reg .b64 	%rd<7>;
+	.reg .pred 	%p<31>;
+	.reg .b32 	%r<103>;
+	.reg .b64 	%rd<47>;
 
 
-	mov.u64 	%SPL, __local_depot3;
-	cvta.local.u64 	%SP, %SPL;
-	ld.param.u64 	%rd2, [_ZN4cuda4dmem15Buffer$LT$T$GT$3set17h98f419e728313cf8E_param_0];
-	ld.param.u64 	%rd3, [_ZN4cuda4dmem15Buffer$LT$T$GT$3set17h98f419e728313cf8E_param_1];
-	ld.param.u32 	%r1, [_ZN4cuda4dmem15Buffer$LT$T$GT$3set17h98f419e728313cf8E_param_2];
-	st.u64 	[%SP+0], %rd2;
-	st.u64 	[%SP+8], %rd3;
-	st.u32 	[%SP+16], %r1;
-	ld.u64 	%rd4, [%rd2+8];
-	setp.ge.u64 	%p1, %rd3, %rd4;
-	@%p1 bra 	$L__BB3_2;
-	bra.uni 	$L__BB3_1;
+	ld.param.u64 	%rd20, [_ZN12rust_kernels10matrix_mul17h4f87c4a65a00d4eeE_param_0];
+	ld.param.u64 	%rd16, [_ZN12rust_kernels10matrix_mul17h4f87c4a65a00d4eeE_param_1];
+	ld.param.u64 	%rd21, [_ZN12rust_kernels10matrix_mul17h4f87c4a65a00d4eeE_param_2];
+	ld.param.u64 	%rd17, [_ZN12rust_kernels10matrix_mul17h4f87c4a65a00d4eeE_param_3];
+	ld.param.u64 	%rd18, [_ZN12rust_kernels10matrix_mul17h4f87c4a65a00d4eeE_param_4];
+	ld.param.u64 	%rd19, [_ZN12rust_kernels10matrix_mul17h4f87c4a65a00d4eeE_param_5];
+	ld.param.u32 	%r28, [_ZN12rust_kernels10matrix_mul17h4f87c4a65a00d4eeE_param_6];
+	cvta.to.global.u64 	%rd1, %rd21;
+	cvta.to.global.u64 	%rd2, %rd20;
+	mov.u32 	%r29, %ntid.x;
+	mov.u32 	%r30, %ctaid.x;
+	mov.u32 	%r31, %tid.x;
+	mad.lo.s32 	%r1, %r30, %r29, %r31;
+	setp.eq.s32 	%p1, %r28, 0;
+	@%p1 bra 	$L__BB3_30;
 
-$L__BB3_1:
-	ld.u64 	%rd5, [%rd2];
-	{ // callseq 2, 0
-	.reg .b32 temp_param_reg;
-	.param .b64 param0;
-	st.param.b64 	[param0+0], %rd5;
-	.param .b64 param1;
-	st.param.b64 	[param1+0], %rd3;
-	.param .b64 retval0;
-	call.uni (retval0), 
-	_ZN4core3ptr7mut_ptr31_$LT$impl$u20$$BP$mut$u20$T$GT$3add17h2f83b7147c177dd8E, 
-	(
-	param0, 
-	param1
-	);
-	ld.param.b64 	%rd1, [retval0+0];
-	} // callseq 2
-	st.u64 	[%SP+24], %rd1;
-	and.b64  	%rd6, %rd1, 3;
-	setp.eq.s64 	%p2, %rd6, 0;
-	@%p2 bra 	$L__BB3_5;
-	bra.uni 	$L__BB3_3;
+	setp.eq.s32 	%p2, %r28, -1;
+	setp.eq.s32 	%p3, %r1, -2147483648;
+	and.pred  	%p4, %p3, %p2;
+	@%p4 bra 	$L__BB3_30;
 
-$L__BB3_2:
-	trap;
-	bra.uni 	$L__BB3_4;
+	div.s32 	%r2, %r1, %r28;
+	mul.lo.s32 	%r32, %r2, %r28;
+	sub.s32 	%r3, %r1, %r32;
+	setp.ge.s32 	%p5, %r2, %r28;
+	setp.lt.s32 	%p6, %r28, 0;
+	or.pred  	%p7, %p6, %p5;
+	@%p7 bra 	$L__BB3_29;
 
-$L__BB3_3:
-	trap;
-	bra.uni 	$L__BB3_4;
+	shr.u32 	%r5, %r28, 3;
+	setp.eq.s32 	%p8, %r5, 0;
+	mov.u32 	%r102, 0;
+	mov.u32 	%r96, %r32;
+	mov.u32 	%r97, %r3;
+	@%p8 bra 	$L__BB3_22;
 
-$L__BB3_4:
+	mul.wide.s32 	%rd3, %r28, 4;
+	mov.u32 	%r91, 0;
+	mov.u32 	%r97, %r3;
+	mov.u32 	%r96, %r32;
+	mov.u32 	%r102, %r91;
 
 $L__BB3_5:
-	st.u32 	[%rd1], %r1;
+	cvt.s64.s32 	%rd4, %r96;
+	setp.ge.u64 	%p9, %rd4, %rd16;
+	@%p9 bra 	$L__BB3_30;
+
+	cvt.s64.s32 	%rd5, %r97;
+	setp.ge.u64 	%p10, %rd5, %rd17;
+	@%p10 bra 	$L__BB3_30;
+
+	cvt.u32.u64 	%r36, %rd4;
+	add.s32 	%r37, %r36, 1;
+	cvt.s64.s32 	%rd22, %r37;
+	setp.ge.u64 	%p11, %rd22, %rd16;
+	@%p11 bra 	$L__BB3_30;
+
+	add.s32 	%r38, %r97, %r28;
+	cvt.s64.s32 	%rd6, %r38;
+	setp.ge.u64 	%p12, %rd6, %rd17;
+	@%p12 bra 	$L__BB3_30;
+
+	add.s32 	%r40, %r36, 2;
+	cvt.s64.s32 	%rd23, %r40;
+	setp.ge.u64 	%p13, %rd23, %rd16;
+	@%p13 bra 	$L__BB3_30;
+
+	cvt.u32.u64 	%r41, %rd6;
+	add.s32 	%r42, %r41, %r28;
+	cvt.s64.s32 	%rd7, %r42;
+	setp.ge.u64 	%p14, %rd7, %rd17;
+	@%p14 bra 	$L__BB3_30;
+
+	add.s32 	%r44, %r36, 3;
+	cvt.s64.s32 	%rd24, %r44;
+	setp.ge.u64 	%p15, %rd24, %rd16;
+	@%p15 bra 	$L__BB3_30;
+
+	cvt.u32.u64 	%r45, %rd7;
+	add.s32 	%r46, %r45, %r28;
+	cvt.s64.s32 	%rd8, %r46;
+	setp.ge.u64 	%p16, %rd8, %rd17;
+	@%p16 bra 	$L__BB3_30;
+
+	add.s32 	%r48, %r36, 4;
+	cvt.s64.s32 	%rd25, %r48;
+	setp.ge.u64 	%p17, %rd25, %rd16;
+	@%p17 bra 	$L__BB3_30;
+
+	cvt.u32.u64 	%r49, %rd8;
+	add.s32 	%r50, %r49, %r28;
+	cvt.s64.s32 	%rd9, %r50;
+	setp.ge.u64 	%p18, %rd9, %rd17;
+	@%p18 bra 	$L__BB3_30;
+
+	add.s32 	%r52, %r36, 5;
+	cvt.s64.s32 	%rd26, %r52;
+	setp.ge.u64 	%p19, %rd26, %rd16;
+	@%p19 bra 	$L__BB3_30;
+
+	cvt.u32.u64 	%r53, %rd9;
+	add.s32 	%r54, %r53, %r28;
+	cvt.s64.s32 	%rd10, %r54;
+	setp.ge.u64 	%p20, %rd10, %rd17;
+	@%p20 bra 	$L__BB3_30;
+
+	add.s32 	%r56, %r36, 6;
+	cvt.s64.s32 	%rd27, %r56;
+	setp.ge.u64 	%p21, %rd27, %rd16;
+	@%p21 bra 	$L__BB3_30;
+
+	cvt.u32.u64 	%r57, %rd10;
+	add.s32 	%r58, %r57, %r28;
+	cvt.s64.s32 	%rd11, %r58;
+	setp.ge.u64 	%p22, %rd11, %rd17;
+	@%p22 bra 	$L__BB3_30;
+
+	add.s32 	%r60, %r36, 7;
+	cvt.s64.s32 	%rd28, %r60;
+	setp.ge.u64 	%p23, %rd28, %rd16;
+	@%p23 bra 	$L__BB3_30;
+
+	cvt.u32.u64 	%r61, %rd11;
+	add.s32 	%r62, %r61, %r28;
+	cvt.s64.s32 	%rd12, %r62;
+	setp.ge.u64 	%p24, %rd12, %rd17;
+	@%p24 bra 	$L__BB3_30;
+
+	shl.b64 	%rd29, %rd4, 2;
+	add.s64 	%rd30, %rd2, %rd29;
+	shl.b64 	%rd31, %rd5, 2;
+	add.s64 	%rd32, %rd1, %rd31;
+	ld.global.u32 	%r63, [%rd32];
+	ld.global.u32 	%r64, [%rd30];
+	add.s64 	%rd33, %rd32, %rd3;
+	ld.global.u32 	%r65, [%rd33];
+	ld.global.u32 	%r66, [%rd30+4];
+	add.s64 	%rd34, %rd33, %rd3;
+	ld.global.u32 	%r67, [%rd34];
+	ld.global.u32 	%r68, [%rd30+8];
+	add.s64 	%rd35, %rd34, %rd3;
+	ld.global.u32 	%r69, [%rd35];
+	ld.global.u32 	%r70, [%rd30+12];
+	add.s64 	%rd36, %rd35, %rd3;
+	ld.global.u32 	%r71, [%rd36];
+	ld.global.u32 	%r72, [%rd30+16];
+	add.s64 	%rd37, %rd36, %rd3;
+	ld.global.u32 	%r73, [%rd37];
+	ld.global.u32 	%r74, [%rd30+20];
+	add.s64 	%rd38, %rd37, %rd3;
+	ld.global.u32 	%r75, [%rd38];
+	ld.global.u32 	%r76, [%rd30+24];
+	add.s64 	%rd39, %rd38, %rd3;
+	ld.global.u32 	%r78, [%rd39];
+	ld.global.u32 	%r79, [%rd30+28];
+	mad.lo.s32 	%r80, %r63, %r64, %r102;
+	mad.lo.s32 	%r81, %r65, %r66, %r80;
+	mad.lo.s32 	%r82, %r67, %r68, %r81;
+	mad.lo.s32 	%r83, %r69, %r70, %r82;
+	mad.lo.s32 	%r84, %r71, %r72, %r83;
+	mad.lo.s32 	%r85, %r73, %r74, %r84;
+	mad.lo.s32 	%r86, %r75, %r76, %r85;
+	mad.lo.s32 	%r102, %r78, %r79, %r86;
+	add.s32 	%r96, %r36, 8;
+	cvt.u32.u64 	%r87, %rd12;
+	add.s32 	%r97, %r87, %r28;
+	add.s32 	%r91, %r91, 1;
+	setp.lt.s32 	%p25, %r91, %r5;
+	@%p25 bra 	$L__BB3_5;
+
+$L__BB3_22:
+	and.b32  	%r98, %r28, -8;
+	setp.ge.s32 	%p26, %r98, %r28;
+	add.s32 	%r18, %r32, %r3;
+	@%p26 bra 	$L__BB3_26;
+
+$L__BB3_23:
+	add.s32 	%r98, %r98, 1;
+	cvt.s64.s32 	%rd13, %r96;
+	setp.ge.u64 	%p27, %rd13, %rd16;
+	@%p27 bra 	$L__BB3_30;
+
+	cvt.s64.s32 	%rd14, %r97;
+	setp.ge.u64 	%p28, %rd14, %rd17;
+	@%p28 bra 	$L__BB3_30;
+
+	cvt.u32.u64 	%r88, %rd13;
+	shl.b64 	%rd40, %rd14, 2;
+	add.s64 	%rd41, %rd1, %rd40;
+	ld.global.u32 	%r89, [%rd41];
+	shl.b64 	%rd42, %rd13, 2;
+	add.s64 	%rd43, %rd2, %rd42;
+	ld.global.u32 	%r90, [%rd43];
+	mad.lo.s32 	%r102, %r89, %r90, %r102;
+	add.s32 	%r96, %r88, 1;
+	add.s32 	%r97, %r97, %r28;
+	setp.lt.s32 	%p29, %r98, %r28;
+	@%p29 bra 	$L__BB3_23;
+
+$L__BB3_26:
+	cvt.s64.s32 	%rd15, %r18;
+	setp.lt.u64 	%p30, %rd15, %rd19;
+	@%p30 bra 	$L__BB3_28;
+	bra.uni 	$L__BB3_27;
+
+$L__BB3_28:
+	cvta.to.global.u64 	%rd44, %rd18;
+	shl.b64 	%rd45, %rd15, 2;
+	add.s64 	%rd46, %rd44, %rd45;
+	st.global.u32 	[%rd46], %r102;
+
+$L__BB3_29:
+	ret;
+
+$L__BB3_30:
+	trap;
+
+$L__BB3_27:
+	trap;
+
+}
+	// .globl	_ZN47_$LT$i32$u20$as$u20$core__iter__range__Step$GT$17forward_unchecked17h35defd4ccf24a22bE
+.visible .func  (.param .b32 func_retval0) _ZN47_$LT$i32$u20$as$u20$core__iter__range__Step$GT$17forward_unchecked17h35defd4ccf24a22bE(
+	.param .b32 _ZN47_$LT$i32$u20$as$u20$core__iter__range__Step$GT$17forward_unchecked17h35defd4ccf24a22bE_param_0,
+	.param .b64 _ZN47_$LT$i32$u20$as$u20$core__iter__range__Step$GT$17forward_unchecked17h35defd4ccf24a22bE_param_1
+)
+{
+	.reg .b32 	%r<4>;
+
+
+	ld.param.u32 	%r1, [_ZN47_$LT$i32$u20$as$u20$core__iter__range__Step$GT$17forward_unchecked17h35defd4ccf24a22bE_param_0];
+	ld.param.u32 	%r2, [_ZN47_$LT$i32$u20$as$u20$core__iter__range__Step$GT$17forward_unchecked17h35defd4ccf24a22bE_param_1];
+	add.s32 	%r3, %r2, %r1;
+	st.param.b32 	[func_retval0+0], %r3;
+	ret;
+
+}
+	// .globl	_ZN4core10intrinsics8unlikely17hf2930e96276c5cd5E
+.visible .func  (.param .b32 func_retval0) _ZN4core10intrinsics8unlikely17hf2930e96276c5cd5E(
+	.param .b32 _ZN4core10intrinsics8unlikely17hf2930e96276c5cd5E_param_0
+)
+{
+	.reg .b32 	%r<2>;
+
+
+	ld.param.u8 	%r1, [_ZN4core10intrinsics8unlikely17hf2930e96276c5cd5E_param_0];
+	st.param.b32 	[func_retval0+0], %r1;
 	ret;
 
 }

@@ -2,6 +2,8 @@
 #include <vector>
 #include <chrono>
 #include <cuda_runtime.h>
+#include <fstream>
+#include <string>
 
 #define CHECK_CUDA(call) \
     do { \
@@ -26,51 +28,84 @@ __global__ void matrix_mul(const int* a, const int* b, int* c, int n) {
     }
 }
 
+struct BenchResult {
+    int size;
+    double gpu_time;
+    std::string title;
+};
+
+void export_bench_results(const BenchResult* results, int count) {
+    // open a file to write the results
+    std::ofstream file("bench_results2.txt");
+    if (!file.is_open()) {
+        std::cerr << "Error opening file for writing results." << std::endl;
+        return;
+    }
+    // write as follows: B1|<bench_name>|<size>|<gpu_time>
+    for (int i = 0; i < count; ++i) {
+        file << "B2|" << results[i].title << "|"
+             << results[i].size << "|"
+             << results[i].gpu_time << std::endl;
+    }
+    file.close();
+    std::cout << "Results exported to bench_results.txt" << std::endl;
+}
+
+const int is[] = { 1, 10, 20, 50, 100, 200, 500 };
+const int is_count = sizeof(is) / sizeof(is[0]);
+
 int main() {
     int n = 1024;
     size_t size = n * n * sizeof(int);
+    BenchResult results[is_count];
 
-    std::vector<int> a(n * n), b(n * n), c(n * n, 0);
-    for (int i = 0; i < n * n; ++i) {
-        //a[i] = (i * 1234567) % 1000;
-        //b[i] = (i * 7654321) % 1000;
-        a[i] = i;
-        b[i] = i;
+    for (int index = 0; index < is_count; ++index) {
+        int iters = is[index];
+        std::vector<int> a(n * n), b(n * n), c(n * n, 0);
+        for (int i = 0; i < n * n; ++i) {
+            //a[i] = (i * 1234567) % 1000;
+            //b[i] = (i * 7654321) % 1000;
+            a[i] = i;
+            b[i] = i;
+        }
+
+        int *d_a, *d_b, *d_c;
+        CHECK_CUDA(cudaMalloc(&d_a, size));
+        CHECK_CUDA(cudaMalloc(&d_b, size));
+        CHECK_CUDA(cudaMalloc(&d_c, size));
+
+        CHECK_CUDA(cudaMemcpy(d_a, a.data(), size, cudaMemcpyHostToDevice));
+        CHECK_CUDA(cudaMemcpy(d_b, b.data(), size, cudaMemcpyHostToDevice));
+
+        int threads_per_block = 64;
+        int blocks = (n * n + threads_per_block - 1) / threads_per_block;
+
+        auto gpu_start = std::chrono::high_resolution_clock::now();
+        for (int iter = 0; iter < iters; ++iter) {
+            matrix_mul<<<blocks, threads_per_block>>>(d_a, d_b, d_c, n);
+            CHECK_CUDA(cudaDeviceSynchronize());
+        }
+
+        CHECK_CUDA(cudaMemcpy(c.data(), d_c, size, cudaMemcpyDeviceToHost));
+
+        auto gpu_end = std::chrono::high_resolution_clock::now();
+        double gpu_time = std::chrono::duration<double, std::milli>(gpu_end - gpu_start).count();
+
+
+        std::cout << "Matrix size: " << n << "x" << n << 
+            " - Iterations: " << iters << 
+         " - GPU time: " << gpu_time << " ms" << std::endl;
+
+        CHECK_CUDA(cudaFree(d_a));
+        CHECK_CUDA(cudaFree(d_b));
+        CHECK_CUDA(cudaFree(d_c));
+
+        results[index].size = iters;
+        results[index].gpu_time = gpu_time;
+        results[index].title = std::to_string(n) + "x" + std::to_string(n) + " - " + std::to_string(iters) + " iterations";
     }
-
-    int *d_a, *d_b, *d_c;
-    CHECK_CUDA(cudaMalloc(&d_a, size));
-    CHECK_CUDA(cudaMalloc(&d_b, size));
-    CHECK_CUDA(cudaMalloc(&d_c, size));
-
-    CHECK_CUDA(cudaMemcpy(d_a, a.data(), size, cudaMemcpyHostToDevice));
-    CHECK_CUDA(cudaMemcpy(d_b, b.data(), size, cudaMemcpyHostToDevice));
-
-    int threads_per_block = 64;
-    int blocks = (n * n + threads_per_block - 1) / threads_per_block;
-
-    auto start = std::chrono::high_resolution_clock::now();
-    for (int iter = 0; iter < 100; ++iter) {
-        matrix_mul<<<blocks, threads_per_block>>>(d_a, d_b, d_c, n);
-        CHECK_CUDA(cudaDeviceSynchronize());
-    }
-
-    CHECK_CUDA(cudaMemcpy(c.data(), d_c, size, cudaMemcpyDeviceToHost));
-
-    auto end = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-
-    std::cout << "Matrix size: " << n << "x" << n << " - GPU time: " << duration << " ms" << std::endl;
-
-    std::cout << "First 10 elements of the result:" << std::endl;
-    for (int i = 0; i < 10; ++i) {
-        std::cout << c[i] << " ";
-    }
-    std::cout << std::endl;
-
-    CHECK_CUDA(cudaFree(d_a));
-    CHECK_CUDA(cudaFree(d_b));
-    CHECK_CUDA(cudaFree(d_c));
+    export_bench_results(results, is_count);
+    std::cout << "All done!" << std::endl;
     return 0;
 }
 
