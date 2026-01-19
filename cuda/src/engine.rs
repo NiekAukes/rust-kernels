@@ -86,7 +86,7 @@ pub fn compile_program<'a>(
                 Ok(_) => {}
                 Err(e) => {
                     println!("Error adding libdevice module: {:?}", e);
-                    return Err(e);
+                    return Err(CUDAError::NVVMError(e));
                 }
             }
 
