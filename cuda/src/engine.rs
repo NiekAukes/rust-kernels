@@ -407,10 +407,210 @@ impl<Dim: CudaDim, T: DSend, U: DSend, V: DSend, W: DSend> Kernel<Dim, (T, U, V,
     }
 }
 
+impl<Dim: CudaDim, T: DSend, U: DSend, V: DSend, W: DSend, A: DSend>
+Kernel<Dim, (T, U, V, W, A)>
+{
+    /// Kernel launcher with five arguments located on the host, blocks until results have been received
+    pub fn launch(
+        &self,
+        threads_per_block: Dim,
+        blocks: Dim,
+        arg1: T,
+        arg2: U,
+        arg3: V,
+        arg4: W,
+        arg5: A,
+    ) -> Result<(), CUDAError> {
+        //println!("Launching kernel {} with {} threads per block and {} blocks", self.name, threads_per_block, blocks);
+        //println!("Arguments: {:?}, {:?}, {:?}, {:?}", arg1, arg2, arg3, arg4);
+        let mut arg1 = arg1;
+        let mut arg2 = arg2;
+        let mut arg3 = arg3;
+        let mut arg4 = arg4;
+        let mut arg5 = arg5;
+        let mut t1 = arg1.to_device()?;
+        let mut t2 = arg2.to_device()?;
+        let mut t3 = arg3.to_device()?;
+        let mut t4 = arg4.to_device()?;
+        let mut t5 = arg5.to_device()?;
+
+        // compile the program
+        let module = compile_program(self.code, self.name)?;
+        // get the kernel
+        let kernel = module.get_kernel(self.name)?;
+
+        // launch the kernel
+        kernel.launch(
+            &blocks,
+            &threads_per_block,
+            0,
+            &[
+                t1.pass(),
+                t2.pass(),
+                t3.pass(),
+                t4.pass(),
+                t5.pass(),
+            ],
+        )?;
+
+        // retrieve the result
+        arg1.copy_from_device(t1)?;
+        arg2.copy_from_device(t2)?;
+        arg3.copy_from_device(t3)?;
+        arg4.copy_from_device(t4)?;
+        arg5.copy_from_device(t5)?;
+        Ok(())
+    }
+
+    pub fn launch_with_dptr(
+        &self,
+        threads_per_block: Dim,
+        blocks: Dim,
+        arg1: &mut DPtr<T>,
+        arg2: &mut DPtr<U>,
+        arg3: &mut DPtr<V>,
+        arg4: &mut DPtr<W>,
+        arg5: &mut DPtr<A>,
+    ) -> Result<(), CUDAError> {
+        //println!("Launching kernel {} with {} threads per block and {} blocks", self.name, threads_per_block, blocks);
+        //println!("Arguments: {:?}, {:?}, {:?}, {:?}", arg1, arg2, arg3, arg4);
+        let mut t1 = arg1;
+        let mut t2 = arg2;
+        let mut t3 = arg3;
+        let mut t4 = arg4;
+        let mut t5 = arg5;
+
+        // compile the program
+        let module = compile_program(self.code, self.name).unwrap();
+        // get the kernel
+        let kernel = module.get_kernel(self.name).unwrap();
+
+        // launch the kernel
+        kernel.launch(
+            &blocks,
+            &threads_per_block,
+            0,
+            &[
+                t1.pass(),
+                t2.pass(),
+                t3.pass(),
+                t4.pass(),
+                t5.pass(),
+            ],
+        )?;
+
+        return Ok(());
+    }
+}
+
+impl<Dim: CudaDim, T: DSend, U: DSend, V: DSend, W: DSend, A: DSend, B: DSend>
+Kernel<Dim, (T, U, V, W, A, B)>
+{
+    /// Kernel launcher with six arguments located on the host, blocks until results have been received
+    pub fn launch(
+        &self,
+        threads_per_block: Dim,
+        blocks: Dim,
+        arg1: T,
+        arg2: U,
+        arg3: V,
+        arg4: W,
+        arg5: A,
+        arg6: B,
+    ) -> Result<(), CUDAError> {
+        //println!("Launching kernel {} with {} threads per block and {} blocks", self.name, threads_per_block, blocks);
+        //println!("Arguments: {:?}, {:?}, {:?}, {:?}", arg1, arg2, arg3, arg4);
+        let mut arg1 = arg1;
+        let mut arg2 = arg2;
+        let mut arg3 = arg3;
+        let mut arg4 = arg4;
+        let mut arg5 = arg5;
+        let mut arg6 = arg6;
+        let mut t1 = arg1.to_device()?;
+        let mut t2 = arg2.to_device()?;
+        let mut t3 = arg3.to_device()?;
+        let mut t4 = arg4.to_device()?;
+        let mut t5 = arg5.to_device()?;
+        let mut t6 = arg6.to_device()?;
+
+        // compile the program
+        let module = compile_program(self.code, self.name)?;
+        // get the kernel
+        let kernel = module.get_kernel(self.name)?;
+
+        // launch the kernel
+        kernel.launch(
+            &blocks,
+            &threads_per_block,
+            0,
+            &[
+                t1.pass(),
+                t2.pass(),
+                t3.pass(),
+                t4.pass(),
+                t5.pass(),
+                t6.pass(),
+            ],
+        )?;
+
+        // retrieve the result
+        arg1.copy_from_device(t1)?;
+        arg2.copy_from_device(t2)?;
+        arg3.copy_from_device(t3)?;
+        arg4.copy_from_device(t4)?;
+        arg5.copy_from_device(t5)?;
+        arg6.copy_from_device(t6)?;
+        Ok(())
+    }
+
+    pub fn launch_with_dptr(
+        &self,
+        threads_per_block: Dim,
+        blocks: Dim,
+        arg1: &mut DPtr<T>,
+        arg2: &mut DPtr<U>,
+        arg3: &mut DPtr<V>,
+        arg4: &mut DPtr<W>,
+        arg5: &mut DPtr<A>,
+        arg6: &mut DPtr<B>,
+    ) -> Result<(), CUDAError> {
+        //println!("Launching kernel {} with {} threads per block and {} blocks", self.name, threads_per_block, blocks);
+        //println!("Arguments: {:?}, {:?}, {:?}, {:?}", arg1, arg2, arg3, arg4);
+        let mut t1 = arg1;
+        let mut t2 = arg2;
+        let mut t3 = arg3;
+        let mut t4 = arg4;
+        let mut t5 = arg5;
+        let mut t6 = arg6;
+
+        // compile the program
+        let module = compile_program(self.code, self.name).unwrap();
+        // get the kernel
+        let kernel = module.get_kernel(self.name).unwrap();
+
+        // launch the kernel
+        kernel.launch(
+            &blocks,
+            &threads_per_block,
+            0,
+            &[
+                t1.pass(),
+                t2.pass(),
+                t3.pass(),
+                t4.pass(),
+                t5.pass(),
+                t6.pass(),
+            ],
+        )?;
+
+        return Ok(());
+    }
+}
+
 impl<Dim: CudaDim, T: DSend, U: DSend, V: DSend, W: DSend, A: DSend, B: DSend, C: DSend>
     Kernel<Dim, (T, U, V, W, A, B, C)>
 {
-    /// Kernel launcher with four arguments located on the host, blocks until results have been received
+    /// Kernel launcher with seven arguments located on the host, blocks until results have been received
     pub fn launch(
         &self,
         threads_per_block: Dim,
@@ -531,7 +731,7 @@ impl<
         D: DSend,
     > Kernel<Dim, (T, U, V, W, A, B, C, D)>
 {
-    /// Kernel launcher with four arguments located on the host, blocks until results have been received
+    /// Kernel launcher with eight arguments located on the host, blocks until results have been received
     pub fn launch(
         &self,
         threads_per_block: Dim,
@@ -661,7 +861,7 @@ impl<
         E: DSend,
     > Kernel<Dim, (T, U, V, W, A, B, C, D, E)>
 {
-    /// Kernel launcher with four arguments located on the host, blocks until results have been received
+    /// Kernel launcher with nine arguments located on the host, blocks until results have been received
     pub fn launch(
         &self,
         threads_per_block: Dim,
