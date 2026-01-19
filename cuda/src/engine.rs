@@ -81,6 +81,15 @@ pub fn compile_program<'a>(
                 }
             }
 
+            const LIBDEVICE_BC: &[u8] = include_bytes!("libdevice.10.bc");
+            match program.add_module(LIBDEVICE_BC, "libdevice.10.bc".to_string()) {
+                Ok(_) => {}
+                Err(e) => {
+                    println!("Error adding libdevice module: {:?}", e);
+                    return Err(e);
+                }
+            }
+
             let ptx = match program.compile(&[
                 nvvm::NvvmOption::FmaContraction,
                 nvvm::NvvmOption::Arch(nvvm::NvvmArch::Compute75),
