@@ -81,7 +81,7 @@ pub fn compile_program<'a>(
                 }
             }
 
-            const LIBDEVICE_BC: &[u8] = include_bytes!("libdevice.10.bc");
+            const LIBDEVICE_BC: &[u8] = include_bytes!(env!("LIB_DEVICE"));
             match program.add_module(LIBDEVICE_BC, "libdevice.10.bc".to_string()) {
                 Ok(_) => {}
                 Err(e) => {

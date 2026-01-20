@@ -16,4 +16,13 @@ fn main() {
     //.expect("Could not find a cuda installation");
     // println!("cargo:warning=Adding cuda library search path: {}", curoot.display());
     println!("cargo:rustc-link-lib=cuda");
+
+    let lib_device = find_cuda_helper::find_cuda_root()
+        .expect("Failed to find CUDA ROOT, make sure the CUDA SDK is installed and CUDA_PATH or CUDA_ROOT are set!")
+        .join("nvvm")
+        .join("libdevice")
+        .join("libdevice.10.bc")
+        .to_string_lossy()
+        .into_owned();
+    println!("cargo:rustc-env=LIB_DEVICE={}", lib_device);
 }
